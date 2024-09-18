@@ -1,0 +1,159 @@
+/* 폰트 정의 */
+@font-face { 
+    font-family: 'KoPubWorld Batang';
+    font-style: normal;
+    font-weight: 300;
+    src: local('KoPubWorldBatang'),
+        url('https://cdn.jsdelivr.net/npm/font-kopubworld@1.0/fonts/KoPubWorld-Batang-Light.woff2') format('woff2'),
+        url('https://cdn.jsdelivr.net/npm/font-kopubworld@1.0/fonts/KoPubWorld-Batang-Light.woff') format('woff'),
+        url('https://cdn.jsdelivr.net/npm/font-kopubworld@1.0/fonts/KoPubWorld-Batang-Light.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'KoPubWorld Batang';
+    font-style: normal;
+    font-weight: 500;
+    src: local('KoPubWorldBatang'),
+        url('https://cdn.jsdelivr.net/npm/font-kopubworld@1.0/fonts/KoPubWorld-Batang-Medium.woff2') format('woff2'),
+        url('https://cdn.jsdelivr.net/npm/font-kopubworld@1.0/fonts/KoPubWorld-Batang-Medium.woff') format('woff'),
+        url('https://cdn.jsdelivr.net/npm/font-kopubworld@1.0/fonts/KoPubWorld-Batang-Medium.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'KoPubWorld Batang';
+    font-style: normal;
+    font-weight: 700;
+    src: local('KoPubWorldBatang'),
+        url('https://cdn.jsdelivr.net/npm/font-kopubworld@1.0/fonts/KoPubWorld-Batang-Bold.woff2') format('woff2'),
+        url('https://cdn.jsdelivr.net/npm/font-kopubworld@1.0/fonts/KoPubWorld-Batang-Bold.woff') format('woff'),
+        url('https://cdn.jsdelivr.net/npm/font-kopubworld@1.0/fonts/KoPubWorld-Batang-Bold.otf') format('opentype');
+}
+
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-jp.min.css");
+
+:root {
+    --bg: var()
+}
+
+/* 기본적인 리셋과 스타일 설정 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'KoPubWorld Batang', serif; /* KoPubWorld Batang 폰트 적용 */
+    font-size: 14px;
+    text-align: justify;
+    line-height: calc(100vh / 30);
+    color: black;
+    overflow: hidden; /* 수평 및 수직 스크롤 숨기기 */
+    background-color: white;
+}
+
+.loading {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: 999;
+    background-color: black;
+}
+
+.white, .white .loading {
+    background-color: white;
+}
+
+.black, .black .loading {
+    background-color: black;
+}
+
+.backlight, .backlight .loading {
+    background-color: rgb(116, 116, 116);
+}
+
+.white a {
+    color: black;
+}
+
+.black, .black a, .black button {
+    color: white;
+}
+
+.backlight, .backlight a, .backlight button {
+    color: black;
+}
+
+body * { touch-action: none; }
+
+main {
+    position: relative;
+    padding: 2lh;
+    height: 100vh; /* 화면 전체 높이 */
+    overflow: hidden; /* .content 영역에만 스크롤 적용 */
+}
+
+.content {
+    height: 100%;
+    overflow-y: scroll; /* 수직 스크롤바 표시 */
+    overflow-x: hidden; /* 수평 스크롤바 숨기기 */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer, Edge */
+}
+
+.content::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+}
+
+img {
+    width: 100%; /* 이미지 가로폭을 페이지에 맞게 조정 */
+    height: auto; /* 이미지 비율 유지 */
+    display: block; /* 이미지를 블록처럼 표시하여 위아래 여백 제거 */
+    margin: 20px 0; /* 이미지 상하 여백 설정 */
+}
+
+.nav-button {
+    background: none;
+    border: none;
+    cursor: default;
+    position: fixed;
+    top: 0;
+    height: 100%;
+    width: 50%;
+}
+
+#prev-page, #clickable {
+    left: 0;
+}
+
+#next-page, #go-root {
+    right: 0;
+}
+
+#theme {
+    right: 1lh;
+}
+
+#clickable, #go-root, #theme {
+    height: 1lh;
+    width: auto;
+    aspect-ratio: 1;
+}
+
+.image-container {
+    width: 100%;
+    display: flex;
+    justify-content: center; /* 수평 중앙 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+}
+
+.image-container > img {
+    width: 100%;
+    height: auto;
+    margin: 0;
+}
+
+a {
+    text-decoration: underline;
+    font-family: 'Pretendard JP', sans-serif;
+}
