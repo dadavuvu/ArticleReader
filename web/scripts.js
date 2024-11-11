@@ -46,14 +46,11 @@ function Loaded() {
     // 페이지 넘김 함수
     function goToPage(pageIndex) {
         const lineHeight = Number(window.getComputedStyle(content).lineHeight.replace("px", ""))
-        const height = content.clientHeight;
-
-        // 페이지 갯수 (추가적으로 페이지 내용을 처리하는 방법이 필요)
         const totalPages = Math.ceil(content.scrollHeight / content.clientHeight);
         if (pageIndex < 0 || pageIndex >= totalPages) return;
         currentPage = pageIndex;
         content.scrollTo({
-            top: currentPage * content.clientHeight
+            top: currentPage * lineHeight * 30
         });
     }
 
