@@ -14,6 +14,9 @@ git clone https://github.com/dadavuvu/ArticleReader.git
 cd ArticleReader
 ```
 ```
+npm i index.js
+```
+```
 node index.js
 ```
 이후  [웹](http://127.0.0.1:5050) 접속
