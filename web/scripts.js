@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         document.body.classList.add(window.localStorage.getItem("theme"))
     }
 
-    document.querySelector('#theme').addEventListener('click', function () {
+    document.querySelector('#setting').addEventListener('click', function () {
         window.localStorage.setItem("theme", (window.localStorage.getItem("theme") == "white" && "black") || (window.localStorage.getItem("theme") == "black" && "backlight") || "white");
         setTheme()
     });
@@ -14,6 +14,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 function Loaded() {
     const content = document.querySelector('.content');
+
+    const urlParams = new URL(window.location.href).searchParams;
+    if (urlParams.has('addbottom')) {
+        document.querySelector('main').style.paddingBottom = 2+Number(urlParams.get("addbottom"))+"lh"
+    };
 
     // 이미지 컨테이너 크기 위치 조절
     const vh = document.body.clientHeight
@@ -40,6 +45,9 @@ function Loaded() {
 
     // 페이지 넘김 함수
     function goToPage(pageIndex) {
+        const lineHeight = Number(window.getComputedStyle(content).lineHeight.replace("px", ""))
+        const height = content.clientHeight;
+
         // 페이지 갯수 (추가적으로 페이지 내용을 처리하는 방법이 필요)
         const totalPages = Math.ceil(content.scrollHeight / content.clientHeight);
         if (pageIndex < 0 || pageIndex >= totalPages) return;
@@ -58,16 +66,41 @@ function Loaded() {
         goToPage(currentPage + 1);
     });
 
+    document.querySelector('#prev-web').addEventListener('click', function () {
+        history.back();
+    });
+
+    document.querySelector('#next-web').addEventListener('click', function () {
+        history.forward();
+    });
+
     document.querySelector('#go-root').addEventListener('click', function () {
         location.href = "/"
     });
 
     let clickable = false
-    document.querySelector('#clickable').addEventListener('click', function () {
+    document.querySelector('#click').addEventListener('click', function () {
         clickable = !clickable
         document.querySelector('#next-page').style.display = clickable && "none" || ""
         document.querySelector('#prev-page').style.display = clickable && "none" || ""
     });
 
     document.querySelector(".loading").remove()
+
+    const toggleButton = document.querySelector("#toggleButton");
+    const navbar = document.querySelector("#navbar");
+    const closeNavbar = document.querySelector("#untoggleButton");
+    const main = document.querySelector("main");
+
+    toggleButton.addEventListener("click", () => {
+        navbar.classList.toggle("show");
+        closeNavbar.classList.toggle("unshow");
+        main.classList.toggle("navi");
+    });
+
+    closeNavbar.addEventListener("click", () => {
+        navbar.classList.remove("show");
+        closeNavbar.classList.add("unshow");
+        main.classList.remove("navi");
+    });
 }

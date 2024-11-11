@@ -5,53 +5,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>eBook Reader</title>
-  <style>
-    body {
-      color: black;
-      background-color: white;
-    }
 
-    .black {
-      color: white;
-      background-color: black;
-    }
-
-    .backlight {
-      color: black;
-      background-color: rgb(135, 134, 130);
-    }
-  </style>
 </head>
 
 <body>
-  <h1>dcinside</h1>
+  <h1>NovelDC</h1>
+  <h2>DCInside</h2>
   <form action="/dcinside.html">
-    <label for="id">갤러리 아이디</label>
+    <label>갤러리 아이디</label>
     <input type="text" name="id" value=""><br>
-    <label for="id">글 번호</label>
-    <input type="text" name="no" value=""><br><br>
+    <label>글 번호</label>
+    <input type="text" name="no" value=""><br>
+    <label>추가 마진 (줄)</label>
+    <input type="text" name="addbottom" value=""><br><br>
     <input type="submit" value="이동">
   </form>
-  <h1>arcalive</h1>
-  <form action="/arcalive.html">
-    <label for="id">갤러리 아이디</label>
-    <input type="text" name="id" value=""><br>
-    <label for="id">글 번호</label>
-    <input type="text" name="no" value=""><br><br>
-    <input type="submit" value="이동">
-  </form>
-  <h1>RULIWEB</h1>
-  <form action="/ruliweb.html">
-    <label for="id">갤러리 아이디</label>
-    <input type="text" name="id" value=""><br>
-    <label for="id">글 번호</label>
-    <input type="text" name="no" value=""><br><br>
-    <input type="submit" value="이동">
-  </form>
-  <script>
-    document.body.className = ""
-    document.body.classList.add(window.localStorage.getItem("theme"))
-  </script>
+  <h2>arca.live</h2>
 </body>
 
 </html>

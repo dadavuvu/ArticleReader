@@ -25,26 +25,14 @@ document.addEventListener('DOMContentLoaded', async function () {
         element.remove()
     }
 
-    for (const element of content.querySelectorAll(".og-div")) {
-        element.remove()
-    }
-
     for (const element of content.querySelectorAll("a")) {
-        if (element.href.indexOf("gall.dcinside.com/mgallery/board/view") != -1) {
+        if (element.href.indexOf("https://gall.dcinside.com/mgallery/board/view") != -1) {
             element.setAttribute("target", "")
             element.href = "/dcinside.html?" + new URL(element.href).searchParams.toString()
         }
     }
 
-    for (const element of content.querySelectorAll("br")) {
-        if (element.parentElement == content) {
-            const newElement = document.createElement("p")
-            content.insertBefore(newElement, element)
-            newElement.appendChild(element)
-        }
-    }
-
-    document.querySelector('.content').innerHTML = `<h2>${data.querySelector(".title_headtext").textContent} ${data.querySelector(".title_subject").textContent}</h2>` + content.innerHTML
+    document.querySelector('.content').innerHTML = content.innerHTML
 
     const images = [...document.querySelectorAll("img")];
 
