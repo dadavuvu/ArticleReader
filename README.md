@@ -5,7 +5,10 @@
 ## 실행 방법
 ~~[앱](https://github.com/dadavuvu/ArticleReader/releases)을 사용하거나,~~ Termux에서
 ```
-https://github.com/dadavuvu/ArticleReader.git
+pkg i git
+```
+```
+git clone https://github.com/dadavuvu/ArticleReader.git
 ```
 ```
 cd ArticleReader
