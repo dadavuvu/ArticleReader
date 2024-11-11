@@ -50,7 +50,7 @@ function Loaded() {
         if (pageIndex < 0 || pageIndex >= totalPages) return;
         currentPage = pageIndex;
         content.scrollTo({
-            top: currentPage * lineHeight * 30
+            top: currentPage * lineHeight * (30 - Number(urlParams.get("addbottom")))
         });
     }
 
