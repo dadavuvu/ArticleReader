@@ -2,7 +2,11 @@
   "short_name": "ArticleReader",
   "name": "ArticleReader",
   "icons": [
-    
+    {
+      "src": "appicon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
   ],
   "start_url": "/index.html",
   "display": "standalone",
