@@ -3,180 +3,210 @@
 
 /* 기본적인 리셋과 스타일 설정 */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -ms-user-select: none;
+  -moz-user-select: -moz-none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
 }
 
 body {
-    font-family: 'KoPubWorld Batang', serif; /* KoPubWorld Batang 폰트 적용 */
-    font-size: 14px;
-    text-align: justify;
-    line-height: calc(100vh / (14 * 30) * 14);
-    color: black;
-    overflow: hidden; /* 수평 및 수직 스크롤 숨기기 */
-    background-color: #fff; /* 배경색을 흰색으로 설정 */
+  font-family: 'KoPubWorld Batang', serif;
+  /* KoPubWorld Batang 폰트 적용 */
+  font-size: 14px;
+  text-align: justify;
+  line-height: calc(100vh / (14 * 30) * 14);
+  color: black;
+  overflow: hidden;
+  /* 수평 및 수직 스크롤 숨기기 */
+  background-color: #fff;
+  /* 배경색을 흰색으로 설정 */
 }
 
-body * { touch-action: none; }
+body * {
+  touch-action: none;
+}
 
 main {
-    position: relative;
-    padding: 2lh;
-    height: 100vh; /* 화면 전체 높이 */
-    overflow: hidden; /* .content 영역에만 스크롤 적용 */
+  position: relative;
+  padding: 2lh;
+  height: 100vh;
+  /* 화면 전체 높이 */
+  overflow: hidden;
+  /* .content 영역에만 스크롤 적용 */
 }
 
 main.navi {
-    padding-bottom: 4lh;
+  padding-bottom: 4lh;
 }
 
-.white, .white .loading {
-    background-color: white;
+.white,
+.white .loading {
+  background-color: white;
 }
 
-.black, .black .loading {
-    background-color: black;
+.black,
+.black .loading {
+  background-color: black;
 }
 
-.backlight, .backlight .loading {
-    background-color: rgb(116, 116, 116);
+.backlight,
+.backlight .loading {
+  background-color: rgb(116, 116, 116);
 }
 
 .white a {
-    color: black;
+  color: black;
 }
 
-.black, .black a, .black button {
-    color: white;
+.black,
+.black a,
+.black button {
+  color: white;
 }
 
-.backlight, .backlight a, .backlight button {
-    color: black;
+.backlight,
+.backlight a,
+.backlight button {
+  color: black;
 }
 
 .content {
-    height: 100%;
-    overflow-y: scroll; /* 수직 스크롤바 표시 */
-    overflow-x: hidden; /* 수평 스크롤바 숨기기 */
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* Internet Explorer, Edge */
+  height: 100%;
+  overflow-y: scroll;
+  /* 수직 스크롤바 표시 */
+  overflow-x: hidden;
+  /* 수평 스크롤바 숨기기 */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* Internet Explorer, Edge */
 }
 
 .content::-webkit-scrollbar {
-    display: none; /* Chrome, Safari */
+  display: none;
+  /* Chrome, Safari */
 }
 
 img {
-    width: 100%; /* 이미지 가로폭을 페이지에 맞게 조정 */
-    height: auto; /* 이미지 비율 유지 */
-    display: block; /* 이미지를 블록처럼 표시하여 위아래 여백 제거 */
-    margin: 20px 0; /* 이미지 상하 여백 설정 */
-}
-
-.nav-button {
-    background: none;
-    border: none;
-    cursor: default;
-    position: fixed;
-    top: 0;
-    height: 100%;
-    width: 50%;
-}
-
-#prev-page {
-    left: 0;
-}
-
-#next-page {
-    right: 0;
+  width: 100%;
+  /* 이미지 가로폭을 페이지에 맞게 조정 */
+  height: auto;
+  /* 이미지 비율 유지 */
+  display: block;
+  /* 이미지를 블록처럼 표시하여 위아래 여백 제거 */
+  margin: 20px 0;
+  /* 이미지 상하 여백 설정 */
 }
 
 .image-container {
-    width: 100%;
-    display: flex;
-    justify-content: center; /* 수평 중앙 정렬 */
-    align-items: center; /* 세로 중앙 정렬 */
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.image-container > img {
-    width: 100%;
-    height: auto;
-    margin: 0;
+.image-container>img {
+  width: 100%;
+  height: auto;
+  margin: 0;
 }
 
 a:link {
-    font-family: 'KoPubWorld Dotum', sans-serif; /* KoPubWorld Dotum 폰트 적용 */
-    text-decoration: underline;
+  font-family: 'KoPubWorld Dotum', sans-serif;
+  /* KoPubWorld Dotum 폰트 적용 */
+  text-decoration: underline;
 }
 
-.content > *:has(a:link) {
-    z-index: 10;
+.content>*:has(a:link) {
+  z-index: 10;
 }
 
 #navbar {
-    position: fixed;
-    left: 0;
-    bottom: -90px; /* 처음에는 화면 밖에 위치 */
-    width: 100%;
-    background-color: white;
-    color: black;
-    display: flex;
-    justify-content: center;
-    padding: 15px 0;
-    transition: bottom 0.3s ease-in-out;
-    border-radius: .5lh .5lh 0 0;
-    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-    z-index: 10;
+  position: fixed;
+  left: 0;
+  bottom: -90px;
+  /* 처음에는 화면 밖에 위치 */
+  width: 100%;
+  background-color: white;
+  color: black;
+  display: flex;
+  justify-content: center;
+  padding: 15px 0;
+  transition: bottom 0.3s ease-in-out;
+  border-radius: .5lh .5lh 0 0;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  z-index: 10;
 }
 
 /* 네비게이션 아이콘 */
 #navbar button {
-    margin: 0 20px;
-    font-size: max-width;
-    transition: transform .5s ease, background-color .5s ease;
-    background: none;
-    border: none;
-    cursor: default;
-    z-index: 10;
+  margin: 0 20px;
+  font-size: max-width;
+  transition: transform .5s ease, background-color .5s ease;
+  background: none;
+  border: none;
+  cursor: default;
+  z-index: 10;
 }
 
 .material-symbols-rounded {
-    font-size: 2lh !important;
+  font-size: 2lh !important;
 }
 
 /* 버튼 스타일 */
 #toggleButton {
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    background-color: white;
-    padding: .3lh;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    border-radius: .5lh 0 0 0;
-    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  background-color: white;
+  padding: .3lh;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  border-radius: .5lh 0 0 0;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
 
 #navbar.show {
-    bottom: 0;
+  bottom: 0;
 }
 
 #untoggleButton {
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    position: fixed;
-    top: 0;
-    left: 0;
-    border: none;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  border: none;
 }
 
 .unshow {
-    display: none;
+  display: none;
 }
 
-.black #navbar, .black #toggleButton {
-    background-color: #333;
+.black #navbar,
+.black #toggleButton {
+  background-color: #333;
+}
+
+#page-indicator {
+  position: absolute;
+  bottom: .5lh;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: none;
+  font-size: .5lh;
+  font-family: 'KoPubWorld Dotum', sans-serif;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+#page-indicator.show {
+  opacity: 1;
+  transition: none;
 }
