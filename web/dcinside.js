@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   for (const element of content.querySelectorAll("a")) {
     if (element.href.indexOf("https://gall.dcinside.com/mgallery/board/view") != -1) {
       element.setAttribute("target", "")
-      element.href = "/dcinside.html?" + new URL(element.href).searchParams.toString() + (urlParams.has('addbottom') && `&addbottom=${urlParams.get('addbottom')}`)
+      element.href = "/dcinside.html?" + new URL(element.href).searchParams.toString()
     }
   }
 
