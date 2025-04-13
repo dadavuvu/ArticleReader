@@ -1,0 +1,10 @@
+{
+  "short_name": "ArticleReader",
+  "name": "ArticleReader",
+  "icons": [
+    
+  ],
+  "start_url": "/index.html",
+  "display": "standalone",
+  "orientation": "landscape"
+}
