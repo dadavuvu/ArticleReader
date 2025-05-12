@@ -23,9 +23,20 @@ function Loaded() {
 
   // 현재 페이지 인덱스
   let currentPage = 0;
-  const lineHeight = Number(window.getComputedStyle(content).lineHeight.replace("px", ""))
+  let lineHeight = Number(window.getComputedStyle(content).lineHeight.replace("px", ""))
 
   document.querySelectorAll(".image-container").forEach(element => {
+    const img = element.querySelector("img");
+    if (img.complete) {
+        imageInitalize(element)
+    } else {
+      img.onload = () => {
+        imageInitalize(element)
+      }
+    }
+  });
+
+  function imageInitalize(element) {
     const img = element.querySelector("img");
     const imgHeightLh = Math.ceil(img.height / lineHeight);
 
@@ -34,10 +45,10 @@ function Loaded() {
 
     const containerTop = content.getBoundingClientRect().top;
     const elementTop = element.getBoundingClientRect().top;
-  
+
     const offset = elementTop - containerTop + content.scrollTop;
     const globalLineIndex = Math.floor(offset / lineHeight);
-  
+
     const pageLine = (globalLineIndex % 26);
     const endPageLine = pageLine + imgHeightLh;
     console.log(element, endPageLine, pageLine)
@@ -45,18 +56,23 @@ function Loaded() {
     if (endPageLine > 26) {
       element.style.marginTop = `${26 - pageLine}lh`;
     }
-  });
-
-  const totalPages = Math.ceil(content.scrollHeight / content.clientHeight);
+  }
 
   // 페이지 넘김 함수
   function goToPage(pageIndex) {
+    lineHeight = Number(window.getComputedStyle(content).lineHeight.replace("px", ""))
+    const totalPages = Math.ceil(content.scrollHeight / content.clientHeight);
     if (pageIndex < 0 || pageIndex >= totalPages) return;
     currentPage = pageIndex;
     content.scrollTo({
       top: currentPage * lineHeight * 26
     });
+    showIndicator(currentPage + 1 + " / " + totalPages)
   }
+
+  window.addEventListener("resize", function () {
+    goToPage(currentPage);
+  })
 
   document.querySelector('#prev-web').addEventListener('click', function () {
     history.back();
@@ -109,7 +125,5 @@ function Loaded() {
     } else {
       goToPage(currentPage - 1);
     }
-
-    showIndicator(currentPage + 1 + " / " + totalPages)
   });
 }

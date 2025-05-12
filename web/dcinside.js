@@ -11,14 +11,21 @@ document.addEventListener('DOMContentLoaded', async function () {
   const content = data.querySelector(".write_div")
 
   for (const element of content.querySelectorAll("img")) {
+    console.dir(element)
     element.style.cssText = ""
     element.setAttribute("onclick", "")
     element.setAttribute("onerror", "")
     element.setAttribute("alt", "")
-    if (element.src == "https://nstatic.dcinside.com/dc/m/img/gallview_loading_ori.gif") {
+    if (element.getAttribute("data-original")) {
       element.src = element.getAttribute("data-original")
     }
-    element.parentNode.innerHTML = `<div class="image-container">${element.parentNode.innerHTML}</div>`
+
+    var div = document.createElement("div");
+    div.classList.add("image-container");
+    element.parentNode.insertBefore(div, element.nextSibling);
+    div.appendChild(element);
+    
+    // element.parentNode.innerHTML = `<div class="image-container">${element.parentNode.innerHTML}</div>`
     // 씨 발놈의 이미지
     // element.remove()
   }
@@ -36,13 +43,5 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   document.querySelector('.content').innerHTML = content.innerHTML
 
-  const images = [...document.querySelectorAll("img")];
-
-  const proms = images.map(im => new Promise(res =>
-    im.onload = () => res([im.width, im.height])
-  ))
-
-  Promise.all(proms).then(data => {
-    Loaded()
-  })
+  Loaded()
 });
