@@ -86,6 +86,10 @@ function Loaded() {
     location.href = "/"
   });
 
+  document.querySelector('#refresh').addEventListener('click', function () {
+    location.reload()
+  });
+
   document.querySelector(".loading").remove()
 
   const toggleButton = document.querySelector("#toggleButton");
