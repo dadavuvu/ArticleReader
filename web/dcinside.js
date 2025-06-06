@@ -30,6 +30,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     // element.remove()
   }
 
+  for (const element of content.querySelectorAll(".og-div")) {
+    element.remove()
+  }
+
   for (const element of content.querySelectorAll("#spoiler_warning")) {
     element.remove()
   }
@@ -38,6 +42,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     if (element.href.indexOf("https://gall.dcinside.com/mgallery/board/view") != -1) {
       element.setAttribute("target", "")
       element.href = "/dcinside.html?" + new URL(element.href).searchParams.toString()
+    }
+    if (element.href.indexOf("https://m.dcinside.com/board") != -1) {
+      element.setAttribute("target", "")
+      element.href = "/dcinside.html?id=" + new URL(element.href).pathname.split("/")[2] + "&no=" + new URL(element.href).pathname.split("/")[3]
     }
   }
 
