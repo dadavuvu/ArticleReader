@@ -11,6 +11,7 @@
   -webkit-user-select: none;
   -khtml-user-select: none;
   user-select: none;
+  line-break: anywhere;
 }
 
 body {
@@ -171,7 +172,7 @@ a:link {
   background-color: white;
   padding: .3lh;
   border: none;
-  font-size: 18px;
+  font-size: 12px;
   cursor: pointer;
   border-radius: 3lh;
   width: 3lh;
