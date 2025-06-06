@@ -39,11 +39,11 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 
   for (const element of content.querySelectorAll("a")) {
-    if (element.href.indexOf("https://gall.dcinside.com/mgallery/board/view") != -1) {
+    if (element.href.indexOf("gall.dcinside.com/mgallery/board/view") != -1) {
       element.setAttribute("target", "")
       element.href = "/dcinside.html?" + new URL(element.href).searchParams.toString()
     }
-    if (element.href.indexOf("https://m.dcinside.com/board") != -1) {
+    if (element.href.indexOf("m.dcinside.com/board") != -1 || element.href.indexOf("gall.dcinside.com/m") != -1) {
       element.setAttribute("target", "")
       element.href = "/dcinside.html?id=" + new URL(element.href).pathname.split("/")[2] + "&no=" + new URL(element.href).pathname.split("/")[3]
     }
