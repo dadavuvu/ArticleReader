@@ -6,22 +6,119 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ArticleReader</title>
   <meta name="mobile-web-app-capable" content="yes">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/main.css">
 </head>
 
 <body>
   <h1>ArticleReader</h1>
+  <div class="list-frame" id="listFrame">
+    <div class="book-grid" id="bookGrid" role="list">
+      <div class="book-card" role="listitem">
+        <div class="cover">
+          <img>
+        </div>
+        <div class="meta">
+          <div class="title"></div>
+          <div class="author"></div>
+        </div>
+      </div>
+      <div class="book-card" role="listitem">
+        <div class="cover">
+          <img>
+        </div>
+        <div class="meta">
+          <div class="title"></div>
+          <div class="author"></div>
+        </div>
+      </div>
+      <div class="book-card" role="listitem">
+        <div class="cover">
+          <img>
+        </div>
+        <div class="meta">
+          <div class="title"></div>
+          <div class="author"></div>
+        </div>
+      </div>
+      <div class="book-card" role="listitem">
+        <div class="cover">
+          <img>
+        </div>
+        <div class="meta">
+          <div class="title"></div>
+          <div class="author"></div>
+        </div>
+      </div>
+      <div class="book-card" role="listitem">
+        <div class="cover">
+          <img>
+        </div>
+        <div class="meta">
+          <div class="title"></div>
+          <div class="author"></div>
+        </div>
+      </div>
+      <div class="book-card" role="listitem">
+        <div class="cover">
+          <img>
+        </div>
+        <div class="meta">
+          <div class="title"></div>
+          <div class="author"></div>
+        </div>
+      </div>
+      <div class="book-card" role="listitem">
+        <div class="cover">
+          <img>
+        </div>
+        <div class="meta">
+          <div class="title"></div>
+          <div class="author"></div>
+        </div>
+      </div>
+      <div class="book-card" role="listitem">
+        <div class="cover">
+          <img>
+        </div>
+        <div class="meta">
+          <div class="title"></div>
+          <div class="author"></div>
+        </div>
+      </div>
+      <div class="book-card" role="listitem">
+        <div class="cover">
+          <img>
+        </div>
+        <div class="meta">
+          <div class="title"></div>
+          <div class="author"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="banner-controls">
+      <button id="prevBtn" class="banner-btn banner-left">
+        <span class="material-icons banner-icon">chevron_left</span>
+      </button>
+      <button id="nextBtn" class="banner-btn banner-right">
+        <span class="material-icons banner-icon">chevron_right</span>
+      </button>
+    </div>
+
+  </div>
+
   <h2>DCInside</h2>
   <form action="/dcinside.html">
     <label>갤러리 아이디</label>
-    <input type="text" name="id" value=""><br>
+    <input type="text" name="boardId" value=""><br>
     <label>글 번호</label>
-    <input type="text" name="no" value=""><br>
-    <!-- <label>추가 마진 (줄)</label>
-    <input type="text" name="addbottom" value=""><br><br> -->
+    <input type="text" name="articleNo" value=""><br>
     <input type="submit" value="이동">
   </form>
   <h2>arca.live</h2>
+  <script src="main.js"></script>
 </body>
 
 </html>

@@ -28,7 +28,7 @@ function Loaded() {
   document.querySelectorAll(".image-container").forEach(element => {
     const img = element.querySelector("img");
     if (img.complete) {
-        imageInitalize(element)
+      imageInitalize(element)
     } else {
       img.onload = () => {
         imageInitalize(element)

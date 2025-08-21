@@ -12,5 +12,5 @@ app.get('/proxy/dc/*', async (req, res) => {
 })
 
 app.listen(5050, () => {
-  console.log(`localhost:5050`)
+  console.log(`http://127.0.0.1:5050`)
 })
