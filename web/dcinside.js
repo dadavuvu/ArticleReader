@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
     if (element.href.indexOf("m.dcinside.com/board") != -1 || element.href.indexOf("gall.dcinside.com/m") != -1) {
       element.setAttribute("target", "")
-      element.href = "/dcinside.html?id=" + new URL(element.href).pathname.split("/")[2] + "&no=" + new URL(element.href).pathname.split("/")[3]
+      element.href = `/dcinside.html?boardId=${new URL(element.href).pathname.split("/")[2]}&articleNo=${new URL(element.href).pathname.split("/")[3]}`
     }
   }
 
