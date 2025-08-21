@@ -15,6 +15,15 @@ document.addEventListener('DOMContentLoaded', async function () {
 function Loaded() {
   const content = document.querySelector('.content');
 
+  function updateLineHeight() {
+    const element = document.querySelector('body');
+    const lineHeight = window.innerHeight / 30;
+    element.style.lineHeight = `${lineHeight}px`;
+  }
+
+  window.addEventListener('resize', updateLineHeight);
+  updateLineHeight();
+
   const urlParams = new URL(window.location.href).searchParams;
   if (urlParams.has('addbottom')) {
     document.querySelector('main').style.paddingBottom = 2 + Number(urlParams.get("addbottom")) + "lh"

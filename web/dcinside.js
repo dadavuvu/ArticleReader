@@ -47,15 +47,23 @@ document.addEventListener('DOMContentLoaded', async function () {
     div.appendChild(element);
   }
 
+  for (const element of content.querySelectorAll(".og-div")) {
+    element.remove()
+  }
+
   for (const element of content.querySelectorAll("#spoiler_warning")) {
     element.remove()
   }
 
   for (const element of content.querySelectorAll("a")) {
-    if (element.href.indexOf("https://gall.dcinside.com/mgallery/board/view") != -1) {
+    if (element.href.indexOf("gall.dcinside.com/mgallery/board/view") != -1) {
       element.setAttribute("target", "")
       const params = new URL(element.href).searchParams
       element.href = `/dcinside.html?boardId=${params.get("id")}&articleNo=${params.get("no")}`
+    }
+    if (element.href.indexOf("m.dcinside.com/board") != -1 || element.href.indexOf("gall.dcinside.com/m") != -1) {
+      element.setAttribute("target", "")
+      element.href = "/dcinside.html?id=" + new URL(element.href).pathname.split("/")[2] + "&no=" + new URL(element.href).pathname.split("/")[3]
     }
   }
 
