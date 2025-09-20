@@ -55,6 +55,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     element.remove()
   }
 
+  for (const element of content.querySelectorAll(".dc_series")) {
+    element.style = "box-shadow: inset 0 0 2px;padding:0 .25lh;border-radius:.5lh"
+  }
+  
   for (const element of content.querySelectorAll("a")) {
     if (element.href.indexOf("gall.dcinside.com/mgallery/board/view") != -1) {
       element.setAttribute("target", "")

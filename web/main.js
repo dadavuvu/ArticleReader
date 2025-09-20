@@ -24,6 +24,7 @@ function renderPage() {
     const maxPage = Math.max(0, Math.ceil(list.length / pageSize) - 1);
     if (currentPage > maxPage) currentPage = maxPage;
     const start = currentPage * pageSize;
+    let session = true
 
     cards.forEach((card, i) => {
         const item = list[start + i];
@@ -43,13 +44,14 @@ function renderPage() {
                 e.preventDefault(); // 터치 기본 동작 방지
                 timer = setTimeout(() => {
                     longPressed = true;
+                    session = false
                     deleteCard(item);
                 }, longPressDuration);
             });
 
             card.addEventListener('touchend', (e) => {
                 clearTimeout(timer);
-                if (!longPressed) {
+                if (!longPressed && session) {
                     // 롱프레스가 아니면 일반 클릭 처리
                     const url = `${encodeURIComponent(item.source)}?boardId=${encodeURIComponent(item.boardId)}&articleNo=${encodeURIComponent(item.articleNo)}`;
                     window.location.href = url;
