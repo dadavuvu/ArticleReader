@@ -5,7 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ArticleReader</title>
-  <link rel="stylesheet" href="article.css">
+  <link rel="stylesheet" href="/share.css">
+  <link rel="stylesheet" href="/article.css">
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,1,200" />
 </head>
@@ -25,11 +26,20 @@
     <button id="setting"><span class="material-symbols-rounded">format_paint</span></button>
     <button id="refresh"><span class="material-symbols-rounded">refresh</span></button>
   </div>
-  <button id="toggleButton"><span class="material-symbols-rounded">keyboard_arrow_up</span></button>
+  <button id="prevPage" class="floatingButton">
+    <span class="material-symbols-rounded">keyboard_arrow_up</span>
+  </button>
+  <button id="nextPage" class="floatingButton">
+    <span class="material-symbols-rounded">keyboard_arrow_down</span>
+  </button>
+  <button id="toggleButton" class="floatingButton">
+    <span class="material-symbols-rounded">more_horiz</span>
+  </button>
   <button id="untoggleButton" class="unshow"></button>
 
   <script src="ebook.js"></script>
   <script src="dcinside.js"></script>
+  <script src="navi.js"></script>
 </body>
 
 </html>

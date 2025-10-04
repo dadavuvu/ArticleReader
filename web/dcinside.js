@@ -56,9 +56,12 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 
   for (const element of content.querySelectorAll(".dc_series")) {
-    element.style = "box-shadow: inset 0 0 2px;padding:0 .25lh;border-radius:.5lh"
+    element.style = "box-shadow: inset 0 0 2px;padding:0 .5lh;border-radius:.5lh"
+    for (const element2 of element.querySelectorAll("br")) {
+      element2.remove()
+    }
   }
-  
+
   for (const element of content.querySelectorAll("a")) {
     if (element.href.indexOf("gall.dcinside.com/mgallery/board/view") != -1) {
       element.setAttribute("target", "")
@@ -68,6 +71,17 @@ document.addEventListener('DOMContentLoaded', async function () {
     if (element.href.indexOf("m.dcinside.com/board") != -1 || element.href.indexOf("gall.dcinside.com/m") != -1) {
       element.setAttribute("target", "")
       element.href = `/dcinside.html?boardId=${new URL(element.href).pathname.split("/")[2]}&articleNo=${new URL(element.href).pathname.split("/")[3]}`
+    }
+  }
+
+  for (let i = 0; i < content.querySelectorAll("*").length; i++) {
+    const el = content.querySelectorAll("*")[i];
+    const fontSize = parseFloat(el.style.fontSize)
+
+    if (fontSize && !isNaN(fontSize)) {
+      const newSize = Math.round(fontSize / 14) * 14;
+      console.log(newSize)
+      el.style.fontSize = newSize + "px";
     }
   }
 

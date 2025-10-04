@@ -39,10 +39,6 @@ main {
   /* .content 영역에만 스크롤 적용 */
 }
 
-main.navi {
-  padding-bottom: 4lh;
-}
-
 .white,
 .white .loading {
   background-color: white;
@@ -51,11 +47,6 @@ main.navi {
 .black,
 .black .loading {
   background-color: black;
-}
-
-.backlight,
-.backlight .loading {
-  background-color: rgb(116, 116, 116);
 }
 
 .loading {
@@ -70,15 +61,8 @@ main.navi {
 }
 
 .black,
-.black a,
-.black button {
+.black a {
   color: white;
-}
-
-.backlight,
-.backlight a,
-.backlight button {
-  color: black;
 }
 
 .content {
@@ -109,6 +93,14 @@ img {
   /* 이미지 상하 여백 설정 */
 }
 
+a {
+  display: block;
+  /* 줄바꿈 효과 */
+  margin: 0;
+  /* 간격 제거 */
+  padding: 0;
+}
+
 .image-container {
   width: 100%;
   display: flex;
@@ -130,77 +122,6 @@ a:link {
 
 .content>*:has(a:link) {
   z-index: 10;
-}
-
-#navbar {
-  position: fixed;
-  left: 0;
-  bottom: -90px;
-  /* 처음에는 화면 밖에 위치 */
-  width: 100%;
-  background-color: white;
-  color: black;
-  display: flex;
-  justify-content: center;
-  padding: 15px 0;
-  transition: bottom 0.3s ease-in-out;
-  border-radius: .5lh .5lh 0 0;
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-  z-index: 10;
-}
-
-/* 네비게이션 아이콘 */
-#navbar button {
-  margin: 0 20px;
-  font-size: max-width;
-  transition: transform .5s ease, background-color .5s ease;
-  background: none;
-  border: none;
-  cursor: default;
-  z-index: 10;
-}
-
-.material-symbols-rounded {
-  font-size: 2lh !important;
-}
-
-/* 버튼 스타일 */
-#toggleButton {
-  position: fixed;
-  bottom: 1lh;
-  right: 1lh;
-  background-color: white;
-  padding: .3lh;
-  border: none;
-  font-size: 12px;
-  cursor: pointer;
-  border-radius: 3lh;
-  width: 3lh;
-  height: 3lh;
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-}
-
-#navbar.show {
-  bottom: 0;
-}
-
-#untoggleButton {
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  position: fixed;
-  top: 0;
-  left: 0;
-  border: none;
-}
-
-.unshow {
-  display: none;
-}
-
-.black #navbar,
-.black #toggleButton {
-  background-color: #333;
 }
 
 #page-indicator {

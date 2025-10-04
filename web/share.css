@@ -1,0 +1,83 @@
+#navbar {
+  position: fixed;
+  left: 0;
+  bottom: -90px;
+  width: 100%;
+  color: black;
+  display: flex;
+  justify-content: center;
+  padding: 15px 0;
+  transition: bottom 0.3s ease-in-out;
+  z-index: 10;
+}
+
+/* 네비게이션 아이콘 */
+#navbar button {
+  margin: 0 20px;
+  font-size: max-width;
+  transition: transform .5s ease, background-color .5s ease;
+  background: none;
+  border: none;
+  cursor: default;
+  z-index: 10;
+}
+
+.black #navbar button, .black .floatingButton {
+  color: white;
+}
+
+.material-symbols-rounded {
+  font-size: 2lh !important;
+}
+
+/* 버튼 스타일 */
+.floatingButton {
+  position: fixed;
+  bottom: 1lh;
+  right: 1lh;
+  padding: .3lh;
+  font-size: 12px;
+  cursor: pointer;
+  width: 3lh;
+  height: 3lh;
+}
+
+#nextPage {
+  bottom: 5lh;
+}
+
+#prevPage {
+  bottom: 9lh;
+}
+
+#navbar, .floatingButton {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5.1px);
+  -webkit-backdrop-filter: blur(5.1px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+#navbar.show {
+  bottom: 0;
+}
+
+#untoggleButton {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  border: none;
+  z-index: 9;
+}
+
+.black #untoggleButton {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+#untoggleButton.unshow {
+  display: none;
+}

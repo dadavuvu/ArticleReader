@@ -1,4 +1,4 @@
-const pageSize = 9;
+const pageSize = 6;
 let currentPage = 0;
 const cards = document.querySelectorAll('.book-card');
 const prevBtn = document.getElementById('prevBtn');
@@ -24,45 +24,51 @@ function renderPage() {
     const maxPage = Math.max(0, Math.ceil(list.length / pageSize) - 1);
     if (currentPage > maxPage) currentPage = maxPage;
     const start = currentPage * pageSize;
-    let session = true
 
-    cards.forEach((card, i) => {
-        const item = list[start + i];
+    function attachCardEvents(card, item) {
+        if (!item) {
+            card.querySelector('img').src = '/placeholder.png';
+            card.querySelector('.title').textContent = '';
+            card.querySelector('.author').textContent = '';
+            return;
+        }
+
         const img = card.querySelector('img');
         const title = card.querySelector('.title');
         const author = card.querySelector('.author');
 
-        if (item) {
-            img.src = item.thumbnail || '/placeholder.png';
-            title.textContent = item.title || '';
-            author.textContent = item.author || '';
-            let timer = null;
-            let longPressed = false;
-            const longPressDuration = 800; // ms
+        img.src = item.thumbnail || '/placeholder.png';
+        title.textContent = item.title || '';
+        author.textContent = item.author || '';
 
-            card.addEventListener('touchstart', (e) => {
-                e.preventDefault(); // 터치 기본 동작 방지
-                timer = setTimeout(() => {
-                    longPressed = true;
-                    session = false
-                    deleteCard(item);
-                }, longPressDuration);
-            });
+        let pressTimer;
+        const longPressDuration = 800;
 
-            card.addEventListener('touchend', (e) => {
-                clearTimeout(timer);
-                if (!longPressed && session) {
-                    // 롱프레스가 아니면 일반 클릭 처리
-                    const url = `${encodeURIComponent(item.source)}?boardId=${encodeURIComponent(item.boardId)}&articleNo=${encodeURIComponent(item.articleNo)}`;
-                    window.location.href = url;
-                }
-                longPressed = false; // 플래그 초기화
-            });
-        } else {
-            img.src = '';
-            title.textContent = '';
-            author.textContent = '';
-        }
+        const startHandler = () => {
+            pressTimer = setTimeout(() => {
+                deleteCard(item);
+                pressTimer = null;
+            }, longPressDuration);
+        };
+
+        const endHandler = () => {
+            if (pressTimer) {
+                clearTimeout(pressTimer);
+                // 일반 클릭 → 이동
+                const url = `${encodeURIComponent(item.source)}?boardId=${encodeURIComponent(item.boardId)}&articleNo=${encodeURIComponent(item.articleNo)}`;
+                window.location.href = url;
+            }
+        };
+
+        card.addEventListener('touchstart', startHandler, { passive: true });
+        card.addEventListener('touchend', endHandler);
+        card.addEventListener('mousedown', startHandler);
+        card.addEventListener('mouseup', endHandler);
+    }
+
+    cards.forEach((card, i) => {
+        const item = list[start + i];
+        attachCardEvents(card, item);
     });
 
     prevBtn.disabled = currentPage === 0;
@@ -79,11 +85,6 @@ nextBtn.addEventListener('click', () => {
     if ((currentPage + 1) * pageSize < getRecentBooks().length) { currentPage++; renderPage(); }
 });
 
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') prevBtn.click();
-    if (e.key === 'ArrowRight') nextBtn.click();
-});
-
 // 다른 탭에서 recentBooks 변경될 경우
 window.addEventListener('storage', (ev) => {
     if (ev.key === 'ArticleReaderRecentBooks') {
@@ -91,4 +92,6 @@ window.addEventListener('storage', (ev) => {
     }
 });
 
-renderPage();
+document.addEventListener('DOMContentLoaded', async function () {
+    renderPage();
+});
