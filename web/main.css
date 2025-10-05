@@ -21,6 +21,11 @@
     background: transparent;
     border-radius: 0.6em;
     margin: 0 auto;
+    -webkit-touch-callout: none;
+    /* iOS long press 메뉴 차단 */
+    -webkit-user-select: none;
+    /* 텍스트 선택 방지 */
+    user-select: none;
 }
 
 .cover {
@@ -57,7 +62,7 @@
 }
 
 .black .cover img[src][src="/placeholder.png"] {
-  filter: invert(100%);
+    filter: invert(100%);
 }
 
 .meta {

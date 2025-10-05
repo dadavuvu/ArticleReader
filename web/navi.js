@@ -35,9 +35,4 @@ document.addEventListener('DOMContentLoaded', async function () {
     navbar.classList.toggle("show");
     closeNavbar.classList.toggle("unshow");
   });
-
-  closeNavbar.addEventListener("touchstart", () => {
-    navbar.classList.remove("show");
-    closeNavbar.classList.add("unshow");
-  });
 });

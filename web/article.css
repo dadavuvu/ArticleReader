@@ -1,33 +1,8 @@
-/* 폰트 정의 */
-@import "//cdn.jsdelivr.net/npm/font-kopubworld@1.0";
-
-/* 기본적인 리셋과 스타일 설정 */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  -ms-user-select: none;
-  -moz-user-select: -moz-none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  user-select: none;
-  line-break: anywhere;
-}
-
 body {
   font-family: 'KoPubWorld Batang', serif;
   /* KoPubWorld Batang 폰트 적용 */
-  font-size: 14px;
-  text-align: justify;
-  color: black;
   overflow: hidden;
   /* 수평 및 수직 스크롤 숨기기 */
-  background-color: #fff;
-  /* 배경색을 흰색으로 설정 */
-}
-
-body * {
-  touch-action: none;
 }
 
 main {
@@ -37,6 +12,10 @@ main {
   /* 화면 전체 높이 */
   overflow: hidden;
   /* .content 영역에만 스크롤 적용 */
+}
+
+body * {
+  touch-action: none;
 }
 
 .white,

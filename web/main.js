@@ -44,24 +44,36 @@ function renderPage() {
         let pressTimer;
         const longPressDuration = 800;
 
-        const startHandler = () => {
+        const startHandler = (e) => {
+            // ⚠️ 기본 브라우저 동작(이미지 저장/텍스트 선택 등) 차단
+            e.preventDefault();
+
+            // 중복 방지 (touch + mouse 이벤트가 동시에 오는 경우)
+            if (pressTimer) clearTimeout(pressTimer);
+
             pressTimer = setTimeout(() => {
                 deleteCard(item);
                 pressTimer = null;
             }, longPressDuration);
         };
 
-        const endHandler = () => {
+        const endHandler = (e) => {
+            e.preventDefault();
             if (pressTimer) {
                 clearTimeout(pressTimer);
+                pressTimer = null;
+
                 // 일반 클릭 → 이동
                 const url = `${encodeURIComponent(item.source)}?boardId=${encodeURIComponent(item.boardId)}&articleNo=${encodeURIComponent(item.articleNo)}`;
                 window.location.href = url;
             }
         };
 
-        card.addEventListener('touchstart', startHandler, { passive: true });
-        card.addEventListener('touchend', endHandler);
+        // 기존 리스너 제거 후 재등록 (중복 방지)
+        card.oncontextmenu = (e) => e.preventDefault(); // 🧩 길게 누를 때 상세보기 방지 (iOS/Android)
+
+        card.addEventListener('touchstart', startHandler, { passive: false });
+        card.addEventListener('touchend', endHandler, { passive: false });
         card.addEventListener('mousedown', startHandler);
         card.addEventListener('mouseup', endHandler);
     }
@@ -94,4 +106,12 @@ window.addEventListener('storage', (ev) => {
 
 document.addEventListener('DOMContentLoaded', async function () {
     renderPage();
+});
+
+const navbar = document.querySelector("#navbar");
+const closeNavbar = document.querySelector("#untoggleButton");
+
+closeNavbar.addEventListener("touchstart", () => {
+    navbar.classList.remove("show");
+    closeNavbar.classList.add("unshow");
 });

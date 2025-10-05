@@ -100,4 +100,12 @@ function Loaded() {
   document.querySelector('#prevPage').addEventListener('click', function () {
       goToPage(currentPage - 1);
   });
+
+  const navbar = document.querySelector("#navbar");
+  const closeNavbar = document.querySelector("#untoggleButton");
+
+  closeNavbar.addEventListener("click", () => {
+    navbar.classList.remove("show");
+    closeNavbar.classList.add("unshow");
+  });
 }

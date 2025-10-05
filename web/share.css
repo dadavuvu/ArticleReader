@@ -1,3 +1,28 @@
+@import "//cdn.jsdelivr.net/npm/font-kopubworld@1.0";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -ms-user-select: none;
+  -moz-user-select: -moz-none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
+  line-break: anywhere;
+  -webkit-tap-highlight-color: transparent; /* Chrome, Safari, Android, iOS */
+}
+
+body {
+  font-family: 'KoPubWorld Dotum', sans-serif;
+  /* KoPubWorld Batang 폰트 적용 */
+  font-size: 14px;
+  text-align: justify;
+  color: black;
+  background-color: #fff;
+  /* 배경색을 흰색으로 설정 */
+}
+
 #navbar {
   position: fixed;
   left: 0;
@@ -22,16 +47,17 @@
   z-index: 10;
 }
 
-.black #navbar button, .black .floatingButton {
+.black #navbar button, .black .floatingButton, .black .pageButton {
   color: white;
 }
 
 .material-symbols-rounded {
   font-size: 2lh !important;
+  vertical-align: middle;
 }
 
 /* 버튼 스타일 */
-.floatingButton {
+.floatingButton, .pageButton {
   position: fixed;
   bottom: 1lh;
   right: 1lh;
@@ -42,12 +68,17 @@
   height: 3lh;
 }
 
+.pageButton {
+  background: transparent;
+  border: 0;
+}
+
 #nextPage {
   bottom: 5lh;
 }
 
 #prevPage {
-  bottom: 9lh;
+  bottom: 8lh;
 }
 
 #navbar, .floatingButton {
