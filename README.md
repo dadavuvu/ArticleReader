@@ -18,6 +18,7 @@ rm -rf ArticleReader && git clone https://github.com/dadavuvu/ArticleReader.git 
 ```
 이후 [안드로이드 앱](https://github.com/dadavuvu/ArticleReader/releases)을 사용하거나, [웹](http://127.0.0.1:5050)에서 사용해주세요.
 # TODO
+- 최근 읽은 게시글 삭제로직 개선 (ㅅㅄㅅㅂㅄㅄㅅㅂㅄㅄㅄㅄㅄㅂ)
 - 기타 웹사이트 지원 (ex. 아카라이브, 루리웹)
 # ETC
 조승게이병신

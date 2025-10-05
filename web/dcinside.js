@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async function () {
   const urlParams = new URL(window.location.href).searchParams;
   if (!urlParams.has('boardId') || !urlParams.has('articleNo')) return document.write("MISSING_PARAMETERS");
-  let data = await fetch(`http://127.0.0.1:5050/proxy/dc/mgallery/board/view/?id=${urlParams.get("boardId")}&no=${urlParams.get("articleNo")}`)
+  let data = await fetch(`/proxy/dc/mgallery/board/view/?id=${urlParams.get("boardId")}&no=${urlParams.get("articleNo")}`)
   const parser = new DOMParser();
   data = parser.parseFromString(await data.text(), 'text/html')
 
