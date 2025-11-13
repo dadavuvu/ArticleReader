@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   const articleNo = urlParams.get("articleNo");
   let recentBooks = JSON.parse(localStorage.ArticleReaderRecentBooks);
   recentBooks.unshift({
+    type: "dcinside",
     boardId,
     articleNo,
     title: document.title,

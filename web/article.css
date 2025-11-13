@@ -18,23 +18,6 @@ body * {
   touch-action: none;
 }
 
-.white,
-.white .loading {
-  background-color: white;
-}
-
-.black,
-.black .loading {
-  background-color: black;
-}
-
-.loading {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  z-index: 10;
-}
-
 .white a {
   color: black;
 }
@@ -73,7 +56,7 @@ img {
 }
 
 a {
-  display: block;
+  display: inline-block;
   /* 줄바꿈 효과 */
   margin: 0;
   /* 간격 제거 */
