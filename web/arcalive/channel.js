@@ -20,7 +20,12 @@ document.addEventListener('DOMContentLoaded', async function () {
     if (!element.querySelector(".user-info>span:nth-child(1)")) continue;
     let elementContent = document.createElement("a")
     elementContent.className = "article-item"
-    elementContent.href = element.href
+    const hrefMatch = element.href.match(/\/b\/(.*?)\/(\d+)(?:\?p=\d+)?/);
+    if (hrefMatch) {
+      const channelId = hrefMatch[1];
+      const articleNo = hrefMatch[2];
+      elementContent.href = `arcalive.html?channelId=${channelId}&articleNo=${articleNo}`;
+    }
     elementContent.innerHTML = `${element.querySelector(".badge.badge-success") ? `<span class="article-category">${element.querySelector(".badge.badge-success").textContent}</span>` : ""}
     <span class="article-title">${element.querySelector(".title") ? element.querySelector(".title").textContent : element.querySelector(".vcol.col-title").textContent}</span>
     <span class="article-author">${element.querySelector(".user-info>span:nth-child(1)").textContent}</span>

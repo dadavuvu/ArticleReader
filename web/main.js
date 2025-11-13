@@ -64,7 +64,7 @@ function renderPage() {
                 pressTimer = null;
 
                 // 일반 클릭 → 이동
-                const url = `${encodeURIComponent(item.source)}?boardId=${encodeURIComponent(item.boardId)}&articleNo=${encodeURIComponent(item.articleNo)}`;
+                const url = `${item.source}?${item.channelId ? `channelId=${encodeURIComponent(item.channelId)}` : `boardId=${encodeURIComponent(item.boardId)}`}&articleNo=${encodeURIComponent(item.articleNo)}`;
                 window.location.href = url;
             }
         };

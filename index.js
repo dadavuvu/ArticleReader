@@ -75,6 +75,27 @@ app.get('/proxy/arcalive/*', async (req, res) => {
   }
 })
 
+app.get('/proxy/arcalivecdn/*', async (req, res) => {
+  try {
+    let url = req.url.replaceAll("/proxy/arcalivecdn/", "");
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/  58.0.3029.110 Safari/537.3'
+      },
+      redirect: 'follow'
+    })
+
+    const buffer = await response.buffer();
+    // 원본 Content-Type 전달
+    const contentType = response.headers.get('content-type') || 'image/jpeg';
+    res.set('Content-Type', contentType);
+    return res.send(buffer);
+  } catch (err) {
+    console.error(err)
+    res.status(500).send('ERROR')
+  }
+})
+
 app.listen(5050, () => {
   console.log(`http://127.0.0.1:5050`)
 })

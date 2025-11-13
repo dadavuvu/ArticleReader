@@ -73,6 +73,10 @@ document.addEventListener('DOMContentLoaded', async function () {
       element.setAttribute("target", "")
       element.href = `/dcinside.html?boardId=${new URL(element.href).pathname.split("/")[2]}&articleNo=${new URL(element.href).pathname.split("/")[3]}`
     }
+    if (element.href.indexOf("https://arca.live/b") != -1) {
+      element.setAttribute("target", "")
+      element.href = `arcalive.html?channelId=${new URL(element.href).pathname.split("/")[1]}&articleNo=${new URL(element.href).pathname.split("/")[2]}`
+    }
   }
 
   for (let i = 0; i < content.querySelectorAll("*").length; i++) {
