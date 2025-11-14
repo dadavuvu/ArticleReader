@@ -1,5 +1,6 @@
 var fetch = require('node-fetch');
 var express = require('express')
+var puppeteer = require('puppeteer-core');
 var app = express();
 
 app.use(express.static('web'))
@@ -17,13 +18,6 @@ function looksLikeCloudflareChallenge(status, headers, body) {
 
 async function renderWithPuppeteer(url) {
   try {
-    let puppeteer;
-    try {
-      puppeteer = require('puppeteer');
-    } catch (e) {
-      // try puppeteer-core as a fallback
-      puppeteer = require('puppeteer-core');
-    }
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/  58.0.3029.110 Safari/537.3');
