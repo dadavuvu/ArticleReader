@@ -21,9 +21,9 @@ apk update && apk add --no-cache nmap && echo @edge http://nl.alpinelinux.org/al
 ```
 서버 설치 스크립트
 ```
-git clone https://github.com/dadavuvu/ArticleReader.git && cd ArticleReader && npm i && node index.js && cd ..
+git clone https://github.com/dadavuvu/ArticleReader.git && cd ArticleReader && npm i && cd ..
 ```
-서버 재구동 스크립트
+서버 구동 스크립트
 ```
 cd ArticleReader && node index.js && cd ..
 ```
@@ -33,6 +33,7 @@ cd ArticleReader && bash update.sh && cd ..
 ```
 이후 [안드로이드 앱](https://github.com/dadavuvu/ArticleReader/releases)에서 사용해주세요.
 # TODO
+- 좀 더 쉬운 백엔드
 - 기타 웹사이트 지원 (ex. 포스타입, 루리웹)
 # ETC
 조승TV

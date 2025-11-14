@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 const express = require('express')
-const puppeteer = require('puppeteer-core');
+const puppeteer = require('puppeteer');
 const app = express();
 
 app.use(express.static('web'))
@@ -19,7 +19,6 @@ function looksLikeCloudflareChallenge(status, headers, body) {
 async function renderWithPuppeteer(url) {
   try {
     // 안드로이드 환경에서 Chromium 경로를 환경변수로 지정
-    const executablePath = "/system/bin/chrome";
     const browser = await puppeteer.launch({
       headless: true,
       args: [
