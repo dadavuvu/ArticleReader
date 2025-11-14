@@ -19,7 +19,7 @@ function looksLikeCloudflareChallenge(status, headers, body) {
 async function renderWithPuppeteer(url) {
   try {
     // 안드로이드 환경에서 Chromium 경로를 환경변수로 지정
-    const executablePath = "/data/local/tmp/chromium/chrome";
+    const executablePath = "/system/bin/chrome";
     const browser = await puppeteer.launch({
       headless: true,
       executablePath
