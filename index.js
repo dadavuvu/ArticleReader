@@ -18,7 +18,7 @@ function looksLikeCloudflareChallenge(status, headers, body) {
 
 async function renderWithPuppeteer(url) {
   try {
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({ headless: true, executablePath: '/usr/bin/chromium-browser' });
     const page = await browser.newPage();
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/  58.0.3029.110 Safari/537.3');
     await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
