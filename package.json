@@ -1,8 +1,7 @@
 {
   "dependencies": {
-    "arcalive": "^0.2.0",
     "express": "^4.21.0",
     "node-fetch": "^2.7.0",
-    "puppeteer": "^24.30.0"
+    "puppeteer-core": "^24.30.0"
   }
 }
