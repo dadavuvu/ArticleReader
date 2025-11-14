@@ -1,7 +1,6 @@
-const fetch = require('node-fetch');
-const express = require('express')
-const puppeteer = require('puppeteer');
-const app = express();
+var fetch = require('node-fetch');
+var express = require('express')
+var app = express();
 
 app.use(express.static('web'))
 
@@ -18,14 +17,14 @@ function looksLikeCloudflareChallenge(status, headers, body) {
 
 async function renderWithPuppeteer(url) {
   try {
-    // 안드로이드 환경에서 Chromium 경로를 환경변수로 지정
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: [
-        "--no-sandbox",
-        "--disable-gpu",
-      ]
-    });
+    let puppeteer;
+    try {
+      puppeteer = require('puppeteer');
+    } catch (e) {
+      // try puppeteer-core as a fallback
+      puppeteer = require('puppeteer-core');
+    }
+    const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/  58.0.3029.110 Safari/537.3');
     await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
