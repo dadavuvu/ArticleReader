@@ -64,7 +64,7 @@ jobs:
           ./gradlew assembleRelease \
             -Pandroid.injected.signing.store.file=$(pwd)/app/release.keystore \
             -Pandroid.injected.signing.store.password="${{ secrets.RELEASE_KEYSTORE_PASSWORD }}" \
-            -Pandroid.injected.signing.key.alias="release" \
+            -Pandroid.injected.signing.key.alias="key0" \
             -Pandroid.injected.signing.key.password="${{ secrets.RELEASE_KEYSTORE_PASSWORD }}"
 
       # 4. 커밋 메시지 파싱 (태그 및 릴리스 제목 결정)
