@@ -56,25 +56,8 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Install Dependencies
-        run: npm install # 또는 yarn install
-        working-directory: . # 루트 폴더에서 실행
-
-      - name: Build Web Assets
-        run: npm run build # Vite 빌드
-        working-directory: .
-
-      - name: Capacitor Sync
-        run: npx cap sync android
-        working-directory: .
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-        working-directory: ./android
-
       - name: Build Release APK
         run: ./gradlew assembleRelease
-        working-directory: ./android
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
