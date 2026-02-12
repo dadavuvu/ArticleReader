@@ -57,16 +57,6 @@ jobs:
           echo "${{ secrets.RELEASE_KEYSTORE }}" > android/app/release.keystore.base64
           base64 -d android/app/release.keystore.base64 > android/app/release.keystore
 
-      - name: Build Release APK
-        run: |
-          cd android
-          chmod +x gradlew
-          ./gradlew assembleRelease \
-            -Pandroid.injected.signing.store.file=$(pwd)/app/release.keystore \
-            -Pandroid.injected.signing.store.password="${{ secrets.RELEASE_KEYSTORE_PASSWORD }}" \
-            -Pandroid.injected.signing.key.alias="key0" \
-            -Pandroid.injected.signing.key.password="${{ secrets.RELEASE_KEYSTORE_PASSWORD }}"
-
       # 4. 커밋 메시지 파싱 (태그 및 릴리스 제목 결정)
       - name: Parse Commit Message
         id: parse_msg
@@ -87,6 +77,22 @@ jobs:
           
           echo "TAG_NAME=$CLEAN_TAG" >> $GITHUB_OUTPUT
           echo "RELEASE_TITLE=$SUBJECT" >> $GITHUB_OUTPUT
+
+      - name: Build Release APK
+        run: |
+          cd android
+          chmod +x gradlew
+          
+          VERSION_NAME="${{ steps.parse_msg.outputs.TAG_NAME }}"
+          VERSION_CODE=${{ github.run_number }}
+          
+          ./gradlew assembleRelease \
+            -Pandroid.injected.signing.store.file=$(pwd)/app/release.keystore \
+            -Pandroid.injected.signing.store.password="${{ secrets.RELEASE_KEYSTORE_PASSWORD }}" \
+            -Pandroid.injected.signing.key.alias="key0" \
+            -Pandroid.injected.signing.key.password="${{ secrets.RELEASE_KEYSTORE_PASSWORD }}" \
+            -PversionName="$VERSION_NAME" \
+            -PversionCode="$VERSION_CODE"
 
       # 5. GitHub Release 생성 및 서명된 APK 업로드
       - name: Create Release and Upload
