@@ -1,48 +1,37 @@
-name: Auto Build (Production Ready)
-
+name: Build Android
+run-name: Creating Production Ready Android App 🚀
 on:
   push:
     branches:
-      - main # 혹은 master (사용하시는 메인 브랜치명 확인)
+      - master
+
+permissions:
+  contents: write # Release 생성을 위해 쓰기 권한이 필요합니다.
 
 jobs:
   build:
-    # 커밋 메시지가 Build 또는 Release로 시작할 때만 실행
-    if: startsWith(github.event.head_commit.message, 'Build') || startsWith(github.event.head_commit.message, 'Release')
+    name: Build APK
     runs-on: ubuntu-latest
+    
+    # 커밋 메시지가 'Build' 또는 'Release'로 시작할 때만 작업 실행
+    if: startsWith(github.event.head_commit.message, 'Build') || startsWith(github.event.head_commit.message, 'Release')
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout source
+        uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          ref: master
 
-      - name: Parse Commit Message
-        id: parse_msg
-        run: |
-          SUBJECT=$(echo "${{ github.event.head_commit.message }}" | head -n 1)
-          CLEAN_TAG=$(echo "$SUBJECT" | sed -E 's/^(Build|Release)//i' | xargs)
-          
-          if [[ "$SUBJECT" =~ ^Release ]]; then
-            echo "IS_PRERELEASE=false" >> $GITHUB_OUTPUT
-          else
-            echo "IS_PRERELEASE=true" >> $GITHUB_OUTPUT
-          fi
-          echo "TAG_NAME=$CLEAN_TAG" >> $GITHUB_OUTPUT
-          echo "RELEASE_TITLE=$SUBJECT" >> $GITHUB_OUTPUT
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - name: Setup java
+        uses: actions/setup-java@v3
         with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: 'gradle'
+          distribution: "zulu"
+          java-version: "11"
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
-          node-version: 20.x # 최신 안정화 버전 추천
-          cache: 'npm'
+          node-version: 19.x
 
       - name: Install dependencies
         run: npm ci
@@ -50,42 +39,64 @@ jobs:
       - name: Create Web Build
         run: npm run build
 
-      - name: Capacitor Sync & Assets
+      - name: Capacitor Sync
         run: |
-          # 안드로이드 폴더가 없으면 추가
           if [ ! -d "./android" ]; then npx cap add android; fi
-          npx cap sync android
-          # 리소스 폴더가 있으면 아이콘/스플래시 생성
+          npx cap update
+          npx cap copy
+
+      - name: Generate Assets (Icons/Splash)
+        run: |
           if [ -d "./resources" ]; then 
             npm install @capacitor/assets --save-dev
             npx capacitor-assets generate --android
           fi
 
-      - name: Decode Keystore
+      # 1. AAB 대신 APK 생성 (Release용 Unsigned APK 추출)
+      - name: Build Release APK
+        run: cd android && ./gradlew assembleRelease
+
+      # 2. Keystore 복호화
+      - name: Extract Android signing key from env
         run: |
-          mkdir -p android/app
-          # 기존의 KEYSTORE 시크릿을 사용 (base64)
-          echo "${{ secrets.KEYSTORE }}" | base64 --decode > android/app/release.keystore
+          echo "${{ secrets.RELEASE_KEYSTORE }}" > android/release.jks.base64
+          base64 -d android/release.jks.base64 > android/release.decrypted.jks
 
-      # Capacitor Android Action을 사용하여 빌드 (APK 및 AAB 생성)
-      - name: Build Android Artifacts
-        uses: nag763/capacitor-android-action@v2.0.0
-        with:
-          # 이미 위에서 빌드/싱크를 했으므로 빌드 스킵 가능하지만 안전을 위해 한 번 더 수행
-          build-command: npm run build
-          android-path: android
-          # APK(assembleRelease)와 AAB(bundleRelease) 둘 다 생성
-          args: assembleRelease bundleRelease
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      # 3. APK 서명 작업
+      - name: Sign Release APK
+        run: |
+          jarsigner -keystore android/release.decrypted.jks \
+            -storepass "${{ secrets.RELEASE_KEYSTORE_PASSWORD }}" \
+            -signedjar ./android/app/build/outputs/apk/release/app-release-signed.apk \
+            ./android/app/build/outputs/apk/release/app-release-unsigned.apk release
 
+      # 4. 커밋 메시지 파싱 (태그 및 릴리스 제목 결정)
+      - name: Parse Commit Message
+        id: parse_msg
+        run: |
+          SUBJECT=$(echo "${{ github.event.head_commit.message }}" | head -n 1)
+          CLEAN_TAG=$(echo "$SUBJECT" | sed -E 's/^(Build|Release)//i' | xargs)
+          
+          # 태그가 없으면 현재 시간으로 대체
+          if [ -z "$CLEAN_TAG" ]; then
+            CLEAN_TAG="v$(date +'%Y.%m.%d-%H%M')"
+          fi
+
+          if [[ "$SUBJECT" =~ ^Release ]]; then
+            echo "IS_PRERELEASE=false" >> $GITHUB_OUTPUT
+          else
+            echo "IS_PRERELEASE=true" >> $GITHUB_OUTPUT
+          fi
+          
+          echo "TAG_NAME=$CLEAN_TAG" >> $GITHUB_OUTPUT
+          echo "RELEASE_TITLE=$SUBJECT" >> $GITHUB_OUTPUT
+
+      # 5. GitHub Release 생성 및 서명된 APK 업로드
       - name: Create Release and Upload
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            android/app/build/outputs/apk/release/app-release.apk
+            android/app/build/outputs/apk/release/app-release-signed.apk
           tag_name: ${{ steps.parse_msg.outputs.TAG_NAME }}
           name: ${{ steps.parse_msg.outputs.RELEASE_TITLE }}
           prerelease: ${{ steps.parse_msg.outputs.IS_PRERELEASE }}
