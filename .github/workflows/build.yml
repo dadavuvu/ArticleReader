@@ -93,7 +93,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            android/app/build/outputs/apk/release/app-release-signed.apk
+            android/app/build/outputs/apk/release/app-release.apk
           tag_name: ${{ steps.parse_msg.outputs.TAG_NAME }}
           name: ${{ steps.parse_msg.outputs.RELEASE_TITLE }}
           prerelease: ${{ steps.parse_msg.outputs.IS_PRERELEASE }}
