@@ -40,6 +40,7 @@ jobs:
 
       - name: Capacitor Sync
         run: |
+          npx cap sync android
           if [ ! -d "./android" ]; then npx cap add android; fi
           npx cap update
           npx cap copy
