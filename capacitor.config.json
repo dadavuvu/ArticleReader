@@ -1,0 +1,10 @@
+{
+  "appId": "app.articlereader",
+  "appName": "ArticleReader",
+  "webDir": "dist",
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    }
+  }
+}

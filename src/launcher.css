@@ -1,0 +1,365 @@
+@import "//cdn.jsdelivr.net/npm/font-kopubworld@1.0";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -ms-user-select: none;
+  -moz-user-select: -moz-none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
+  line-break: anywhere;
+  -webkit-tap-highlight-color: transparent;
+  /* Chrome, Safari, Android, iOS */
+}
+
+body {
+  font-family: 'KoPubWorld Dotum', sans-serif;
+  text-align: justify;
+  font-size: 14px;
+  color: black;
+  background-color: #fff;
+  /* 배경색을 흰색으로 설정 */
+}
+
+.white,
+.white input,
+.white select,
+.white button {
+  background-color: white;
+}
+
+.black,
+.black input,
+.black select,
+.black button {
+  background-color: black;
+}
+
+.black,
+.black #navbar button,
+.black .floatingButton,
+.black input,
+.black select,
+.black button,
+.black a {
+  color: white;
+}
+
+.white,
+.white #navbar button,
+.white .floatingButton,
+.white input,
+.white select,
+.white button,
+.white a {
+  color: black;
+}
+
+#navbar,
+.floatingButton {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5.1px);
+  -webkit-backdrop-filter: blur(5.1px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+#navbar {
+  position: fixed;
+  left: 0;
+  bottom: -90px;
+  width: 100%;
+  color: black;
+  display: flex;
+  justify-content: center;
+  padding: 15px 0;
+  transition: bottom 0.3s ease-in-out;
+  z-index: 10;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom: 0;
+}
+
+/* 네비게이션 아이콘 */
+#navbar button {
+  margin: 0 20px;
+  font-size: max-width;
+  transition: transform .5s ease, background-color .5s ease;
+  background: none;
+  border: none;
+  cursor: default;
+  z-index: 10;
+}
+
+.material-symbols-rounded {
+  font-size: 2lh !important;
+  vertical-align: middle;
+}
+
+/* 버튼 스타일 */
+.floatingButton {
+  position: fixed;
+  bottom: 1lh;
+  right: 1lh;
+  padding: .3lh;
+  font-size: 12px;
+  cursor: pointer;
+  width: 3lh;
+  height: 3lh;
+}
+
+#navbar.show {
+  bottom: 0;
+}
+
+#untoggleButton {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  border: none;
+  z-index: 9;
+}
+
+#toggleButton {
+  z-index: 8;
+}
+
+.no-scroll {
+  overflow: hidden;
+  height: 100%;
+}
+
+.black #untoggleButton {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+#untoggleButton.unshow {
+  display: none;
+}
+
+.list-frame {
+  position: relative;
+  padding: 0 3em;
+  z-index: 1;
+}
+
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1em;
+  width: 100%;
+  height: 100%;
+  align-content: start;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+}
+
+.book-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: transparent;
+  border-radius: 0.6em;
+  margin: 0 auto;
+  -webkit-touch-callout: none;
+  /* iOS long press 메뉴 차단 */
+  -webkit-user-select: none;
+  /* 텍스트 선택 방지 */
+  user-select: none;
+}
+
+.cover {
+  width: 100%;
+  aspect-ratio: 3/4;
+  background: #fff;
+  overflow: hidden;
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+  z-index: 5;
+}
+
+.black .cover {
+  background: black;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  position: relative;
+  z-index: 5;
+}
+
+.cover img[src=""] {
+  display: none;
+}
+
+.black .cover img[src][src="/placeholder.png"] {
+  filter: invert(100%);
+}
+
+.card-buttons {
+  position: absolute;
+  top: 0.25em;
+  left: 0.25em;
+  display: flex;
+  gap: 0.25em;
+  z-index: 10;
+}
+
+.card-btn {
+  padding: .2lh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none
+}
+
+.black .card-btn {
+  color: white;
+}
+
+.card-btn .material-icons {
+  font-size: 1lh;
+}
+
+.bookmarked {
+  color: #fc0;
+}
+
+.delete-btn {
+  color: red;
+}
+
+.meta {
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  overflow: hidden;
+  height: 2em;
+}
+
+.title {
+  display: block;
+  font-size: .7em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  margin: 0;
+}
+
+.author {
+  display: block;
+  font-size: .7em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  color: gray;
+}
+
+.banner-controls {
+  position: absolute;
+  inset: 0;
+}
+
+.banner-controls>.banner-btn {
+  position: absolute;
+  z-index: 5;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: gray;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.banner-left {
+  left: 0;
+}
+
+.banner-right {
+  right: 0;
+}
+
+.banner-icon {
+  font-size: 3em;
+  user-select: none;
+  line-height: 1;
+}
+
+.goto-section {
+  display: flex;
+  flex-direction: column;
+  gap: .5lh;
+  width: 100%;
+  margin-top: 1lh;
+  margin-bottom: 3lh;
+}
+
+.goto-section input,
+.goto-section select,
+.goto-section button {
+  display: inline;
+  font-family: 'KoPubWorld Dotum', sans-serif;
+}
+
+.goto-section input {
+  flex-grow: 1;
+  min-width: none;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: .5lh;
+}
+
+.goto-section input,
+.goto-section select,
+.goto-section button {
+  border-radius: .5lh;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  height: 1.5lh;
+  outline: none;
+}
+
+.white .goto-section input,
+.white .goto-section select,
+.white .goto-section button {
+  border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.submit-btn,
+.goto-section input {
+  padding-left: .5lh;
+  padding-right: .5lh;
+}
+
+.white .submit-btn {
+  background-color: black;
+  color: white;
+}
+
+.black .submit-btn {
+  background-color: white;
+  color: black;
+}
