@@ -54,7 +54,7 @@ jobs:
 
       # 1. AAB 대신 APK 생성 (Release용 Unsigned APK 추출)
       - name: Build Release APK
-        run: cd android && chmod +x gradlew && ./gradlew assembleRelease
+        run: cd android && chmod +x gradlew && ./gradlew assembleRelease -Pandroid.injected.signing.config.file=null
 
       # 2. Keystore 복호화
       - name: Extract Android signing key from env
