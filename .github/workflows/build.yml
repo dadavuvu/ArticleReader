@@ -3,7 +3,7 @@ run-name: Creating Production Ready Android App 🚀
 on:
   push:
     branches:
-      - master
+      - main
 
 permissions:
   contents: write # Release 생성을 위해 쓰기 권한이 필요합니다.
@@ -20,7 +20,7 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v3
         with:
-          ref: master
+          ref: main
 
       - name: Setup java
         uses: actions/setup-java@v3
