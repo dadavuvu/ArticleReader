@@ -61,21 +61,11 @@ jobs:
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleRelease
-
-      # 2. Keystore 복호화
-      - name: Extract Android signing key from env
-        run: |
-          echo "${{ secrets.RELEASE_KEYSTORE }}" > android/release.jks.base64
-          base64 -d android/release.jks.base64 > android/release.decrypted.jks
-
-      # 3. APK 서명 작업
-      - name: Sign Release APK
-        run: |
-          jarsigner -keystore android/release.decrypted.jks \
-            -storepass "${{ secrets.RELEASE_KEYSTORE_PASSWORD }}" \
-            -signedjar ./android/app/build/outputs/apk/release/app-release-signed.apk \
-            ./android/app/build/outputs/apk/release/app-release-unsigned.apk release
+          ./gradlew assembleRelease \
+            -Pandroid.injected.signing.store.file=$(pwd)/app/release.keystore \
+            -Pandroid.injected.signing.store.password="${{ secrets.RELEASE_KEYSTORE_PASSWORD }}" \
+            -Pandroid.injected.signing.key.alias="release" \
+            -Pandroid.injected.signing.key.password="${{ secrets.RELEASE_KEYSTORE_PASSWORD }}"
 
       # 4. 커밋 메시지 파싱 (태그 및 릴리스 제목 결정)
       - name: Parse Commit Message
