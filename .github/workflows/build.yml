@@ -3,17 +3,12 @@ name: Auto Build
 on:
   push:
     branches:
-      - main # 또는 사용 중인 메인 브랜치명
+      - main
 
 jobs:
   build:
-    # 커밋 메시지 첫 줄이 Build 또는 Release로 시작하는 경우에만 실행
     if: startsWith(github.event.head_commit.message, 'Build') || startsWith(github.event.head_commit.message, 'Release')
     runs-on: ubuntu-latest
-    
-    defaults:
-      run:
-        working-directory: ./android 
 
     steps:
       - name: Checkout code
@@ -21,43 +16,36 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Parse Commit Message and Set Type
+      - name: Parse Commit Message
         id: parse_msg
         run: |
-          FULL_MSG="${{ github.event.head_commit.message }}"
-          SUBJECT=$(echo "$FULL_MSG" | head -n 1)
-          
-          # 1. 태그 이름 추출 (Build 또는 Release 단어 및 뒤의 공백 제거)
-          # 예: Build v1.0.0 -> v1.0.0
+          SUBJECT=$(echo "${{ github.event.head_commit.message }}" | head -n 1)
           CLEAN_TAG=$(echo "$SUBJECT" | sed -E 's/^(Build|Release)//i' | xargs)
           
-          # 2. 프리릴리즈 여부 결정 (Release로 시작하면 false, 그 외(Build)는 true)
           if [[ "$SUBJECT" =~ ^Release ]]; then
             echo "IS_PRERELEASE=false" >> $GITHUB_OUTPUT
           else
             echo "IS_PRERELEASE=true" >> $GITHUB_OUTPUT
           fi
-          
           echo "TAG_NAME=$CLEAN_TAG" >> $GITHUB_OUTPUT
           echo "RELEASE_TITLE=$SUBJECT" >> $GITHUB_OUTPUT
-        working-directory: .
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: 'gradle'
-
+      # Keystore 파일 생성 (액션 실행 전 필요)
       - name: Decode Keystore
         run: |
-          echo "${{ secrets.KEYSTORE }}" | tr -d '\n ' | base64 --decode > app/release.keystore
+          mkdir -p android/app
+          echo "${{ secrets.KEYSTORE }}" | base64 --decode > android/app/release.keystore
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Build Release APK
-        run: ./gradlew assembleRelease
+      # Capacitor Android Action 사용
+      - name: Capacitor Android Build
+        uses: nag763/capacitor-android-action@v2.0.0
+        with:
+          # 웹 빌드 명령어 (예: npm run build)
+          build-command: npm run build
+          # gradlew가 있는 위치
+          android-path: android
+          # 빌드 타입 (우리는 직접 서명하므로 assembleRelease 실행)
+          args: assembleRelease
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
@@ -69,7 +57,6 @@ jobs:
           files: android/app/build/outputs/apk/release/app-release.apk
           tag_name: ${{ steps.parse_msg.outputs.TAG_NAME }}
           name: ${{ steps.parse_msg.outputs.RELEASE_TITLE }}
-          # 파싱된 결과에 따라 결정 (Release -> false, Build -> true)
           prerelease: ${{ steps.parse_msg.outputs.IS_PRERELEASE }}
           generate_release_notes: true
         env:

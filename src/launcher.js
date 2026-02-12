@@ -1,5 +1,78 @@
 import { LitElement, html, css } from 'lit';
 import { Router } from '@lit-labs/router';
+import { Capacitor } from '@capacitor/core';
+import { StatusBar } from '@capacitor/status-bar';
+import { NavigationBar } from '@capgo/capacitor-navigation-bar';
+
+// 앱 시작 시 시스템 바 및 테마 설정 로직
+(async () => {
+  if (Capacitor.isNativePlatform()) {
+    await StatusBar.hide();
+    await NavigationBar.hide();
+  }
+
+  const THEME_KEY = 'ArticleReaderTheme'; // 'light' | 'dark' | 'system'
+
+  function getSavedTheme() {
+    try {
+      const v = localStorage.getItem(THEME_KEY);
+      return v || 'system';
+    } catch (e) {
+      return 'system';
+    }
+  }
+
+  function getSystemTheme() {
+    try {
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return 'dark';
+      }
+    } catch (e) { }
+    return 'light';
+  }
+
+  function mergeTheme(saved, system) {
+    if (saved === 'light' || saved === 'dark') return saved;
+    return system;
+  }
+
+  async function applyTheme(theme) {
+    // Document level 적용 (CSS에서 [data-theme]로 스타일 분기 사용 가능)
+    try {
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch (e) { }
+  }
+
+  // 초기 적용
+  const saved = getSavedTheme();
+  const system = getSystemTheme();
+  const merged = mergeTheme(saved, system);
+  await applyTheme(merged);
+
+  // 시스템 테마 변경 감지
+  try {
+    if (window.matchMedia) {
+      const mql = window.matchMedia('(prefers-color-scheme: dark)');
+      const handler = async (e) => {
+        const sys = e.matches ? 'dark' : 'light';
+        const mergedNow = mergeTheme(getSavedTheme(), sys);
+        await applyTheme(mergedNow);
+      };
+      if (mql.addEventListener) mql.addEventListener('change', handler);
+      else if (mql.addListener) mql.addListener(handler);
+    }
+  } catch (e) { }
+
+  // 로컬스토리지에서 테마가 변경되면 적용
+  window.addEventListener('storage', (ev) => {
+    if (ev.key === THEME_KEY) {
+      const sys = getSystemTheme();
+      const mergedNow = mergeTheme(getSavedTheme(), sys);
+      applyTheme(mergedNow);
+    }
+  });
+})();
+
 import placeholderpng from './assets/placeholder.png';
 
 export class Launcher extends LitElement {
@@ -67,11 +140,11 @@ export class Launcher extends LitElement {
 
   loadBooks() {
     let books = this.getRecentBooks();
-    
+
     // 즐겨찾기된 항목과 일반 항목 분리
     const bookmarked = [];
     const normal = [];
-    
+
     books.forEach(book => {
       if (this.bookmarks.has(this.getBookmarkKey(book))) {
         bookmarked.push(book);
@@ -79,7 +152,7 @@ export class Launcher extends LitElement {
         normal.push(book);
       }
     });
-    
+
     // 즐겨찾기 -> 일반 책 순서로 병합 (일반 책은 원래 순서 유지)
     this.books = [...bookmarked, ...normal];
     this.requestUpdate();
@@ -93,8 +166,8 @@ export class Launcher extends LitElement {
 
   deleteCard(item) {
     const books = this.getRecentBooks();
-    const index = books.findIndex(b => (b.boardId === item.boardId && b.articleNo === item.articleNo) || 
-                                        (b.channelId === item.channelId && b.articleNo === item.articleNo));
+    const index = books.findIndex(b => (b.boardId === item.boardId && b.articleNo === item.articleNo) ||
+      (b.channelId === item.channelId && b.articleNo === item.articleNo));
     if (index === -1) return;
     books.splice(index, 1);
     localStorage.ArticleReaderRecentBooks = JSON.stringify(books);
@@ -155,33 +228,33 @@ export class Launcher extends LitElement {
           </div>
         `;
       }
-      
+
       const isBookmarked = this.bookmarks.has(this.getBookmarkKey(item));
-      
+
       return html`
         <div class="book-card" role="listitem"
           @click=${(e) => {
-            e.stopPropagation();
-            this.handleCardClick(item);
-          }}
+          e.stopPropagation();
+          this.handleCardClick(item);
+        }}
           @contextmenu=${(e) => e.preventDefault()}
         >
           <div class="cover">
             <img src="${item.thumbnail || placeholderpng}">
             <div class="card-buttons">
               <button class="card-btn bookmark-btn" @click=${(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                this.toggleBookmark(item);
-              }}>
+          e.preventDefault();
+          e.stopPropagation();
+          this.toggleBookmark(item);
+        }}>
                 <span class="material-icons ${isBookmarked ? 'bookmarked' : ''}">star</span>
               </button>
               ${!isBookmarked ? html`
                 <button class="card-btn" @click=${(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  this.deleteCard(item);
-                }} title="삭제">
+            e.preventDefault();
+            e.stopPropagation();
+            this.deleteCard(item);
+          }} title="삭제">
                   <span class="material-icons delete-btn">delete</span>
                 </button>
               ` : ''}

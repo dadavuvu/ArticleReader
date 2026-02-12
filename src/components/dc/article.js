@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { CapacitorHttp, Capacitor } from '@capacitor/core';
+import ebook from '/src/ebook.js';
 
 export class DcArticle extends LitElement {
   static properties = {
@@ -27,7 +28,7 @@ export class DcArticle extends LitElement {
     main {
       position: relative;
       padding: 2lh;
-      height: 100vh;
+      height: 100%;
       overflow: hidden;
     }
 
@@ -48,6 +49,7 @@ export class DcArticle extends LitElement {
       height: 100%;
       overflow-y: scroll;
       overflow-x: hidden;
+      max-height: calc(var(--vh, 1vh) * 100 - 5lh);
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
@@ -67,6 +69,7 @@ export class DcArticle extends LitElement {
       display: inline-block;
       margin: 0;
       padding: 0;
+      color: #06f;
     }
 
     .image-container {
@@ -119,6 +122,10 @@ export class DcArticle extends LitElement {
       text-align: center;
       font-size: 1.5lh;
     }
+
+    p {
+      margin: 0;
+    }
   `;
 
   constructor() {
@@ -137,18 +144,28 @@ export class DcArticle extends LitElement {
     if (this.boardId && this.articleNo) {
       this.loadArticle();
     }
+    window.addEventListener('resize', this._updateVh);
+    window.addEventListener('orientationchange', this._updateVh);
   }
-  
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    try {
+      window.removeEventListener('resize', this._updateVh);
+      window.removeEventListener('orientationchange', this._updateVh);
+    } catch (e) { }
+  }
+
   willUpdate(changedProperties) {
     if (changedProperties.has('boardId') || changedProperties.has('articleNo')) {
       this.loadArticle();
     }
   }
-  
+
   async loadArticle() {
     try {
       const url = (!Capacitor.isNativePlatform() ? '/proxy/' : '') + `https://gall.dcinside.com/mgallery/board/view/?id=${this.boardId}&no=${this.articleNo}`
-      
+
       let htmlText;
       try {
         // Capacitor 환경에서 HttpClient 사용
@@ -177,11 +194,11 @@ export class DcArticle extends LitElement {
       const content = data.querySelector('.write_div');
       if (!content) throw new Error('CONTENT_NOT_FOUND');
 
-      this.title = (data.querySelector('.title_headtext')?.textContent || '') + 
-                   ' ' + 
-                   (data.querySelector('.title_subject')?.textContent || '');
+      this.title = (data.querySelector('.title_headtext')?.textContent || '') +
+        ' ' +
+        (data.querySelector('.title_subject')?.textContent || '');
       this.author = data.querySelector('.nickname')?.getAttribute('title') || '';
-      
+
       const firstImg = content.querySelector('img');
       this.thumbnail = firstImg ? firstImg.src : '';
 
@@ -212,7 +229,7 @@ export class DcArticle extends LitElement {
     if (!localStorage.ArticleReaderRecentBooks) {
       localStorage.ArticleReaderRecentBooks = JSON.stringify([]);
     }
-    
+
     const boardId = this.boardId;
     const articleNo = this.articleNo;
     let recentBooks = JSON.parse(localStorage.ArticleReaderRecentBooks);
@@ -244,9 +261,9 @@ export class DcArticle extends LitElement {
       element.setAttribute('onclick', '');
       element.setAttribute('onerror', '');
       element.setAttribute('alt', '');
-      
+
       let imageSource = element.getAttribute('data-original') || element.src;
-      
+
       element.src = imageSource;
 
       const div = document.createElement('div');
@@ -317,26 +334,42 @@ export class DcArticle extends LitElement {
       }
     }
   }
+  _pagination = null;
+
+  async updated(changedProperties) {
+    // contentHTML이 변경되거나 articleNo가 바뀌어 새로운 글이 로드되었을 때
+    if (changedProperties.has('contentHTML') && this.contentHTML && !this.loading) {
+
+      // 1. 내부 콘텐츠 스크롤을 맨 위로 초기화
+      const contentElement = this.shadowRoot.querySelector('.content');
+      if (contentElement) {
+        contentElement.scrollTop = 0;
+      }
+
+      // 2. 기존 ebook 컨트롤러 정리
+      if (this._ebookController) this._ebookController.cleanup();
+
+      // 3. DOM이 완전히 그려진 후 ebook 로직 실행
+      await this.updateComplete;
+      this._ebookController = ebook.Loaded(this);
+    }
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._pagination) this._pagination.cleanup();
+  }
 
   render() {
     if (this.loading) {
-      return html`
-        <main>
-          <div class="loading">Loading...</div>
-        </main>
-      `;
+      return html`<main><div class="loading">Loading...</div></main>`;
     }
 
     if (this.error) {
-      return html`
-        <main>
-          <div class="error">Error: ${this.error}</div>
-        </main>
-      `;
+      return html`<main><div class="error">Error: ${this.error}</div></main>`;
     }
 
-    window.scrollTo({ top: 0 });
-
+    // render 내부에서는 ebook.Loaded(this)를 호출하지 않습니다.
     return html`
       <main>
         <div class="content">${unsafeHTML(this.contentHTML || '')}</div>

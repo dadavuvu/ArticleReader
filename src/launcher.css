@@ -20,6 +20,7 @@ body {
   font-size: 14px;
   color: black;
   background-color: #fff;
+  margin-bottom: 3lh;
   /* 배경색을 흰색으로 설정 */
 }
 
@@ -78,9 +79,6 @@ body {
   padding: 15px 0;
   transition: bottom 0.3s ease-in-out;
   z-index: 10;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  border-bottom: 0;
 }
 
 /* 네비게이션 아이콘 */
@@ -102,7 +100,7 @@ body {
 /* 버튼 스타일 */
 .floatingButton {
   position: fixed;
-  bottom: 1lh;
+  bottom: 5lh;
   right: 1lh;
   padding: .3lh;
   font-size: 12px;
@@ -112,7 +110,7 @@ body {
 }
 
 #navbar.show {
-  bottom: 0;
+  bottom: 3lh;
 }
 
 #untoggleButton {
@@ -311,7 +309,7 @@ body {
   gap: .5lh;
   width: 100%;
   margin-top: 1lh;
-  margin-bottom: 3lh;
+  margin-bottom: 6lh;
 }
 
 .goto-section input,

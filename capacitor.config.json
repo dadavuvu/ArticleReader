@@ -5,6 +5,12 @@
   "plugins": {
     "CapacitorHttp": {
       "enabled": true
+    },
+    "StatusBar": {
+      "overlaysWebView": true
+    },
+    "Keyboard": {
+      "resize": "none"
     }
   }
 }
