@@ -46,5 +46,6 @@ jobs:
           files: android/app/build/outputs/apk/release/app-release.apk
           name: ${{ github.ref_name }}
           tag_name: ${{ github.ref }}
+          prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
