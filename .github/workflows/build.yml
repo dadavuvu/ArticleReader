@@ -51,10 +51,17 @@ jobs:
             npm install @capacitor/assets --save-dev
             npx capacitor-assets generate --android
           fi
+          
+      - name: Extract Android signing key from env
+        run: |
+          echo "${{ secrets.RELEASE_KEYSTORE }}" > android/app/release.keystore.base64
+          base64 -d android/app/release.keystore.base64 > android/app/release.keystore
 
-      # 1. AAB 대신 APK 생성 (Release용 Unsigned APK 추출)
       - name: Build Release APK
-        run: cd android && chmod +x gradlew && ./gradlew assembleRelease -Pandroid.injected.signing.config.file=null
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease
 
       # 2. Keystore 복호화
       - name: Extract Android signing key from env
