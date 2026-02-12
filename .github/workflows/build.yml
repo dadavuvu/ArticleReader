@@ -1,12 +1,13 @@
-name: Auto Build
+name: Auto Build (Production Ready)
 
 on:
   push:
     branches:
-      - main
+      - main # 혹은 master (사용하시는 메인 브랜치명 확인)
 
 jobs:
   build:
+    # 커밋 메시지가 Build 또는 Release로 시작할 때만 실행
     if: startsWith(github.event.head_commit.message, 'Build') || startsWith(github.event.head_commit.message, 'Release')
     runs-on: ubuntu-latest
 
@@ -30,31 +31,61 @@ jobs:
           echo "TAG_NAME=$CLEAN_TAG" >> $GITHUB_OUTPUT
           echo "RELEASE_TITLE=$SUBJECT" >> $GITHUB_OUTPUT
 
-      # Keystore 파일 생성 (액션 실행 전 필요)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x # 최신 안정화 버전 추천
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create Web Build
+        run: npm run build
+
+      - name: Capacitor Sync & Assets
+        run: |
+          # 안드로이드 폴더가 없으면 추가
+          if [ ! -d "./android" ]; then npx cap add android; fi
+          npx cap sync android
+          # 리소스 폴더가 있으면 아이콘/스플래시 생성
+          if [ -d "./resources" ]; then 
+            npm install @capacitor/assets --save-dev
+            npx capacitor-assets generate --android
+          fi
+
       - name: Decode Keystore
         run: |
           mkdir -p android/app
+          # 기존의 KEYSTORE 시크릿을 사용 (base64)
           echo "${{ secrets.KEYSTORE }}" | base64 --decode > android/app/release.keystore
 
-      # Capacitor Android Action 사용
-      - name: Capacitor Android Build
+      # Capacitor Android Action을 사용하여 빌드 (APK 및 AAB 생성)
+      - name: Build Android Artifacts
         uses: nag763/capacitor-android-action@v2.0.0
         with:
-          # 웹 빌드 명령어 (예: npm run build)
+          # 이미 위에서 빌드/싱크를 했으므로 빌드 스킵 가능하지만 안전을 위해 한 번 더 수행
           build-command: npm run build
-          # gradlew가 있는 위치
           android-path: android
-          # 빌드 타입 (우리는 직접 서명하므로 assembleRelease 실행)
-          args: assembleRelease
+          # APK(assembleRelease)와 AAB(bundleRelease) 둘 다 생성
+          args: assembleRelease bundleRelease
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
-      - name: Create Release and Upload APK
+      - name: Create Release and Upload
         uses: softprops/action-gh-release@v2
         with:
-          files: android/app/build/outputs/apk/release/app-release.apk
+          files: |
+            android/app/build/outputs/apk/release/app-release.apk
           tag_name: ${{ steps.parse_msg.outputs.TAG_NAME }}
           name: ${{ steps.parse_msg.outputs.RELEASE_TITLE }}
           prerelease: ${{ steps.parse_msg.outputs.IS_PRERELEASE }}
