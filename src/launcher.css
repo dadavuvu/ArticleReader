@@ -1,4 +1,5 @@
-@import "//cdn.jsdelivr.net/npm/font-kopubworld@1.0";
+
+  @import "//cdn.jsdelivr.net/npm/font-kopubworld@1.0";
 
 * {
   margin: 0;
@@ -11,7 +12,6 @@
   user-select: none;
   line-break: anywhere;
   -webkit-tap-highlight-color: transparent;
-  /* Chrome, Safari, Android, iOS */
 }
 
 body {
@@ -21,7 +21,6 @@ body {
   color: black;
   background-color: #fff;
   margin-bottom: 3lh;
-  /* 배경색을 흰색으로 설정 */
 }
 
 .white,
@@ -58,38 +57,28 @@ body {
   color: black;
 }
 
-#navbar,
-.floatingButton {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5.1px);
-  -webkit-backdrop-filter: blur(5.1px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
 #navbar {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
   position: fixed;
-  left: 0;
-  bottom: -90px;
-  width: 100%;
-  color: black;
+  bottom: 8.5lh;
+  right: 1lh;
+  color: transparent;
   display: flex;
-  justify-content: center;
-  padding: 15px 0;
-  transition: bottom 0.3s ease-in-out;
+  flex-direction: column;
+  align-items: center;
+  gap: .5lh;
+  transition: all 0.3s ease-in-out;
   z-index: 10;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(1lh);
 }
 
-/* 네비게이션 아이콘 */
-#navbar button {
-  margin: 0 20px;
-  font-size: max-width;
-  transition: transform .5s ease, background-color .5s ease;
-  background: none;
-  border: none;
-  cursor: default;
-  z-index: 10;
+#navbar.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 .material-symbols-rounded {
@@ -97,48 +86,35 @@ body {
   vertical-align: middle;
 }
 
-/* 버튼 스타일 */
+#navbar button,
 .floatingButton {
-  position: fixed;
-  bottom: 5lh;
-  right: 1lh;
-  padding: .3lh;
   font-size: 12px;
   cursor: pointer;
   width: 3lh;
   height: 3lh;
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5.1px);
+  -webkit-backdrop-filter: blur(5.1px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  z-index: 10;
 }
 
-#navbar.show {
-  bottom: 3lh;
+.black #navbar button,
+.black .floatingButton {
+  background: rgba(0, 0, 0, 0.15) !important;
 }
-
-#untoggleButton {
-  width: 100%;
-  height: 100%;
-  background-color: rgba(255, 255, 255, 0.5);
+.floatingButton {
   position: fixed;
-  top: 0;
-  left: 0;
-  border: none;
-  z-index: 9;
+  bottom: 5lh;
+  right: 1lh;
 }
 
-#toggleButton {
-  z-index: 8;
-}
 
 .no-scroll {
   overflow: hidden;
   height: 100%;
-}
-
-.black #untoggleButton {
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-#untoggleButton.unshow {
-  display: none;
 }
 
 .list-frame {
@@ -168,9 +144,7 @@ body {
   border-radius: 0.6em;
   margin: 0 auto;
   -webkit-touch-callout: none;
-  /* iOS long press 메뉴 차단 */
   -webkit-user-select: none;
-  /* 텍스트 선택 방지 */
   user-select: none;
 }
 
@@ -316,7 +290,6 @@ body {
 .goto-section select,
 .goto-section button {
   display: inline;
-  font-family: 'KoPubWorld Dotum', sans-serif;
 }
 
 .goto-section input {

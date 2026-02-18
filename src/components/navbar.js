@@ -13,6 +13,7 @@ export class NavBar extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this.setTheme();
+    window.addEventListener('touchstart', this.handleGlobalTouch.bind(this), { passive: true });
   }
 
   setTheme() {
@@ -52,21 +53,22 @@ export class NavBar extends LitElement {
     this.requestUpdate();
   }
 
-  handleUntoggleNavbar() {
-    this.navbarOpen = false;
-    document.body.classList[this.navbarOpen ? 'add' : 'remove']('no-scroll');
-    this.requestUpdate();
+  handleGlobalTouch(e) {
+    const isNavbarClick = e.composedPath().some(el => el.id === 'navbar' || el.id === 'toggleButton');
+    if (this.navbarOpen && !isNavbarClick) {
+      this.handleToggleNavbar();
+    }
   }
 
   createRenderRoot() {
     return this;
   }
-
+  
   render() {
     return html`
       <div id="navbar" class="${this.navbarOpen ? 'show' : ''}">
         <button id="go-root" @click=${() => this.handleGoRoot()}>
-          <span class="material-symbols-rounded">logout</span>
+          <span class="material-symbols-rounded">home</span>
         </button>
         <button id="prev-web" @click=${() => this.handlePrevWeb()}>
           <span class="material-symbols-rounded">arrow_back_ios_new</span>
@@ -82,9 +84,8 @@ export class NavBar extends LitElement {
         </button>
       </div>
       <button id="toggleButton" class="floatingButton" @click=${() => this.handleToggleNavbar()}>
-        <span class="material-symbols-rounded">more_horiz</span>
+        <span class="material-symbols-rounded">${this.navbarOpen ? 'arrow_drop_down' : 'more_horiz'}</span>
       </button>
-      <button id="untoggleButton" class="${this.navbarOpen ? '' : 'unshow'}" @click=${() => this.handleUntoggleNavbar()}></button>
     `;
   }
 }

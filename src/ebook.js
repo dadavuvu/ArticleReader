@@ -65,6 +65,28 @@ export function setupPagination(component, contentElement, indicatorElement) {
     contentElement.scrollTo({
       top: currentPage * lineHeight * 25
     });
+
+    if (component.boardId && component.articleNo) {
+      const storageKey = 'ArticleReaderBookPageRestore';
+      let restoreData = [];
+      try {
+        restoreData = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      } catch (e) {
+        restoreData = [];
+      }
+
+      const entry = {
+        type: 'dcinside',
+        boardId: component.boardId,
+        articleNo: component.articleNo,
+        pageNo: currentPage
+      };
+
+      restoreData = restoreData.filter(item => !(item.boardId === entry.boardId && item.articleNo === entry.articleNo));
+      restoreData.unshift(entry);
+      localStorage.setItem(storageKey, JSON.stringify(restoreData.slice(0, 100)));
+    }
+
     showIndicator(`${currentPage + 1} / ${totalPages}`);
   };
 
@@ -112,7 +134,20 @@ export function Loaded(component) {
   initializeImages(content, root);
 
   // 3. 페이지네이션 설정
-  return setupPagination(component, content, indicator);
+  const pagination = setupPagination(component, content, indicator);
+
+  // 4. 저장된 페이지 복구
+  const storageKey = 'ArticleReaderBookPageRestore';
+  try {
+    const restoreData = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    const entry = restoreData.find(item => 
+      item.boardId === component.boardId && 
+      item.articleNo === component.articleNo
+    );
+    if (entry && entry.pageNo > 0) {
+      pagination.goToPage(entry.pageNo);
+    }
+  } catch (e) {}
 }
 
 export default { Loaded };
