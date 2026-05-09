@@ -12,8 +12,8 @@ jobs:
     name: Build APK
     runs-on: ubuntu-latest
     
-    # 커밋 메시지가 'Build' 또는 'Release'로 시작할 때만 작업 실행
-    if: startsWith(github.event.head_commit.message, 'Build') || startsWith(github.event.head_commit.message, 'Release')
+    # 커밋 메시지가 'Test' 또는 'Release'로 시작할 때만 작업 실행
+    if: startsWith(github.event.head_commit.message, 'Test') || startsWith(github.event.head_commit.message, 'Release')
 
     steps:
       - name: Checkout source
@@ -32,26 +32,19 @@ jobs:
         with:
           node-version: 22.x
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Create Web Build
-        run: npm run build
-
-      - name: Capacitor Sync
+      - name: Build Web and Capacitor Sync
         run: |
+          npm ci
+          npm run build
           npx cap sync android
           if [ ! -d "./android" ]; then npx cap add android; fi
           npx cap update
           npx cap copy
-
-      - name: Generate Assets (Icons/Splash)
-        run: |
           if [ -d "./resources" ]; then 
             npm install @capacitor/assets --save-dev
             npx capacitor-assets generate --android
           fi
-          
+
       - name: Extract Android signing key from env
         run: |
           echo "${{ secrets.RELEASE_KEYSTORE }}" > android/app/release.keystore.base64
@@ -62,7 +55,7 @@ jobs:
         id: parse_msg
         run: |
           SUBJECT=$(echo "${{ github.event.head_commit.message }}" | head -n 1)
-          CLEAN_TAG=$(echo "$SUBJECT" | sed -E 's/^(Build|Release)//i' | xargs)
+          CLEAN_TAG=$(echo "$SUBJECT" | sed -E 's/^(Test|Release)//i' | xargs)
           
           # 태그가 없으면 현재 시간으로 대체
           if [ -z "$CLEAN_TAG" ]; then
