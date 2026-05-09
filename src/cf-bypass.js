@@ -33,8 +33,11 @@ export function looksLikeCloudflareChallenge(status, headers, body) {
 
 /**
  * @capgo/inappbrowser의 숨겨진 WebView를 이용해 CF 챌린지를 해결한다.
- * openWebView는 앱의 WebView와 동일한 android.webkit.CookieManager를 공유하므로
- * 해결된 cf_clearance 쿠키가 이후 CapacitorHttp 요청에도 자동 적용된다.
+ * WebView가 CF 챌린지를 해결한 뒤 getCookies()로 쿠키를 수동 추출해 반환한다.
+ * (CapacitorHttp는 Java HttpURLConnection을 사용하므로 Android WebView
+ *  CookieManager와 쿠키를 공유하지 않아 직접 Cookie 헤더에 주입해야 한다)
+ *
+ * @returns {Promise<Record<string,string>>} 획득한 쿠키 맵
  */
 async function bypassCFWithWebView(url) {
   const { InAppBrowser } = await import('@capgo/inappbrowser');
@@ -79,11 +82,22 @@ async function bypassCFWithWebView(url) {
     setTimeout(finish, 25000);
   });
 
+  // CF 챌린지 해결 후, WebView를 닫기 전에 쿠키를 추출한다.
+  // CapacitorHttp는 WebView의 CookieManager를 공유하지 않으므로 수동으로 가져와야 한다.
+  let cookies = {};
+  try {
+    cookies = await InAppBrowser.getCookies({ url });
+  } catch {
+    // ignore
+  }
+
   try {
     await InAppBrowser.close({ id });
   } catch {
     // ignore
   }
+
+  return cookies;
 }
 
 /**
@@ -105,8 +119,13 @@ export async function fetchHtml(targetUrl) {
   const response = await CapacitorHttp.get({ url: fetchUrl, headers });
 
   if (isNative && looksLikeCloudflareChallenge(response.status, response.headers, response.data)) {
-    await bypassCFWithWebView(targetUrl);
-    const retried = await CapacitorHttp.get({ url: fetchUrl, headers });
+    const cfCookies = await bypassCFWithWebView(targetUrl);
+    // WebView에서 획득한 쿠키(cf_clearance 등)를 Cookie 헤더로 수동 주입
+    const cookieStr = Object.entries(cfCookies)
+      .map(([k, v]) => `${k}=${v}`)
+      .join('; ');
+    const retryHeaders = cookieStr ? { ...headers, Cookie: cookieStr } : headers;
+    const retried = await CapacitorHttp.get({ url: fetchUrl, headers: retryHeaders });
     return typeof retried.data === 'string' ? retried.data : JSON.stringify(retried.data);
   }
 
