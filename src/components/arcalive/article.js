@@ -1,17 +1,18 @@
 ﻿import { LitElement, html } from 'lit';
+import { Capacitor } from '@capacitor/core';
 import { fetchHtml } from '/src/cf-bypass.js';
 import storage from '/src/storage.js';
 
 /**
- * <dc-article> — DC Inside 글 상세 데이터 프로바이더
+ * <arcalive-article> — ArcaLive 글 상세 데이터 프로바이더
  *
  * 역할: 데이터 fetch + HTML 처리 + localStorage 연동
  * 뷰 렌더링: <article-view> 위임
  * 링크 클릭 처리: article-view 의 위임 핸들러가 담당
  */
-export class DcArticle extends LitElement {
+export class ArcaliveArticle extends LitElement {
   static properties = {
-    boardId:     { type: String },
+    channelId:   { type: String },
     articleNo:   { type: String },
     loading:     { type: Boolean },
     error:       { type: String },
@@ -22,7 +23,7 @@ export class DcArticle extends LitElement {
 
   constructor() {
     super();
-    this.boardId = '';
+    this.channelId = '';
     this.articleNo = '';
     this.loading = true;
     this.error = null;
@@ -34,14 +35,14 @@ export class DcArticle extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    if (this.boardId && this.articleNo) {
+    if (this.channelId && this.articleNo) {
       this.loadArticle();
     }
   }
 
   willUpdate(changed) {
-    if ((changed.has('boardId') || changed.has('articleNo')) &&
-        this.boardId && this.articleNo) {
+    if ((changed.has('channelId') || changed.has('articleNo')) &&
+        this.channelId && this.articleNo) {
       this.loadArticle();
     }
   }
@@ -52,31 +53,31 @@ export class DcArticle extends LitElement {
     this.contentHTML = '';
     this.requestUpdate();
     try {
-      const baseUrl = `https://gall.dcinside.com/mgallery/board/view/?id=${this.boardId}&no=${this.articleNo}`;
+      const baseUrl = `https://arca.live/b/${this.channelId}/${this.articleNo}`;
       const htmlText = await fetchHtml(baseUrl);
       const parser = new DOMParser();
       const data = parser.parseFromString(htmlText, 'text/html');
 
-      if (data.querySelector('.delet')) throw new Error('UNKNOWN_GALLERY');
-      if (data.head.innerHTML.indexOf('alert("해당 갤러리는 존재하지 않습니다.");') !== -1)
-        throw new Error('UNKNOWN_ARTICLE');
+      if (data.querySelector('.error-code')) throw new Error('ARTICLE_NOT_FOUND');
 
-      const content = data.querySelector('.write_div');
+      const content = data.querySelector('.article-content');
       if (!content) throw new Error('CONTENT_NOT_FOUND');
 
-      this._title =
-        (data.querySelector('.title_headtext')?.textContent || '') + ' ' +
-        (data.querySelector('.title_subject')?.textContent || '');
-      this._author = data.querySelector('.nickname')?.getAttribute('title') || '';
+      const titleEl = data.querySelector('.article-head .title-row .title');
+      titleEl?.querySelector('.badge')?.remove();
+      this._title = titleEl?.textContent?.trim() || '';
+      this._author = data.querySelector('.member-info .user-info a')?.textContent?.trim() || '';
 
       const firstImg = content.querySelector('img');
-      this._thumbnail = firstImg ? firstImg.src : '';
+      if (firstImg) {
+        let src = firstImg.getAttribute('data-src') || firstImg.getAttribute('src') || '';
+        src = this._makeAbsoluteUrl(src);
+        this._thumbnail = (src && !Capacitor.isNativePlatform()) ? '/proxy/' + src : src;
+      }
 
       this._saveToRecent();
 
       this.processImages(content);
-      this.removeElements(content, ['.og-div', '#spoiler_warning']);
-      this.processSeries(content);
       this.processLinks(content);
       this.normalizeFontSizes(content);
 
@@ -91,22 +92,29 @@ export class DcArticle extends LitElement {
     }
   }
 
+  _makeAbsoluteUrl(src) {
+    if (!src) return '';
+    if (src.startsWith('//')) return 'https:' + src;
+    if (src.startsWith('/')) return 'https://arca.live' + src;
+    return src;
+  }
+
   _saveToRecent() {
     try {
       let recentBooks = JSON.parse(storage.ArticleReaderRecentBooks || '[]');
       recentBooks.unshift({
-        type: 'dcinside',
-        boardId: this.boardId,
+        type: 'arcalive',
+        channelId: this.channelId,
         articleNo: this.articleNo,
         title: this._title,
         author: this._author,
         thumbnail: this._thumbnail,
-        source: '/dc/article',
+        source: '/arcalive/article',
       });
       recentBooks = recentBooks.filter(
         (item, index, self) =>
           index === self.findIndex(
-            el => el.boardId === item.boardId && el.articleNo === item.articleNo
+            el => el.channelId === item.channelId && el.articleNo === item.articleNo
           )
       );
       storage.ArticleReaderRecentBooks = JSON.stringify(recentBooks);
@@ -114,31 +122,20 @@ export class DcArticle extends LitElement {
   }
 
   processImages(content) {
+    const isNative = Capacitor.isNativePlatform();
     for (const element of content.querySelectorAll('img')) {
       element.style.cssText = '';
       element.setAttribute('onclick', '');
       element.setAttribute('onerror', '');
       element.setAttribute('alt', '');
-      element.src = element.getAttribute('data-original') || element.src;
+      let src = element.getAttribute('data-src') || element.getAttribute('src') || '';
+      src = this._makeAbsoluteUrl(src);
+      if (src && !isNative) src = '/proxy/' + src;
+      if (src) element.src = src;
       const div = document.createElement('div');
       div.classList.add('image-container');
       element.parentNode.insertBefore(div, element.nextSibling);
       div.appendChild(element);
-    }
-  }
-
-  removeElements(content, selectors) {
-    for (const selector of selectors) {
-      for (const element of content.querySelectorAll(selector)) {
-        element.remove();
-      }
-    }
-  }
-
-  processSeries(content) {
-    for (const element of content.querySelectorAll('.dc_series')) {
-      element.style = 'box-shadow: inset 0 0 2px;padding:0 .5lh;border-radius:.5lh';
-      for (const br of element.querySelectorAll('br')) br.remove();
     }
   }
 
@@ -152,20 +149,23 @@ export class DcArticle extends LitElement {
   processLinks(content) {
     const visitedLinks = this.getVisitedLinks();
     for (const element of content.querySelectorAll('a')) {
+      const href = element.getAttribute('href') || '';
+
+      // ArcaLive 내부 링크
+      const arcaMatch = href.match(/\/b\/([\w-]+)\/(\d+)/);
+      if (arcaMatch && (href.startsWith('/b/') || href.includes('arca.live/b/'))) {
+        const newUrl = `/arcalive?channelId=${arcaMatch[1]}&articleNo=${arcaMatch[2]}`;
+        element.setAttribute('target', '');
+        element.href = newUrl;
+        if (visitedLinks.has(newUrl)) element.classList.add('visited');
+        continue;
+      }
+
+      // DC Inside 링크
       if (element.href.indexOf('gall.dcinside.com/mgallery/board/view') !== -1) {
         element.setAttribute('target', '');
         const params = new URL(element.href).searchParams;
         const newUrl = `/dc?boardId=${params.get('id')}&articleNo=${params.get('no')}`;
-        element.href = newUrl;
-        if (visitedLinks.has(newUrl)) element.classList.add('visited');
-      }
-      if (
-        element.href.indexOf('m.dcinside.com/board') !== -1 ||
-        element.href.indexOf('gall.dcinside.com/m') !== -1
-      ) {
-        element.setAttribute('target', '');
-        const path = new URL(element.href).pathname.split('/');
-        const newUrl = `/dc?boardId=${path[2]}&articleNo=${path[3]}`;
         element.href = newUrl;
         if (visitedLinks.has(newUrl)) element.classList.add('visited');
       }
@@ -187,11 +187,11 @@ export class DcArticle extends LitElement {
         .contentHTML=${this.contentHTML}
         .loading=${this.loading}
         .error=${this.error}
-        .boardId=${this.boardId}
+        .boardId=${this.channelId}
         .articleNo=${this.articleNo}
       ></article-view>
     `;
   }
 }
 
-customElements.define('dc-article', DcArticle);
+customElements.define('arcalive-article', ArcaliveArticle);

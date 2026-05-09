@@ -5,17 +5,17 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "proxy": "node proxy.js"
+    "build": "vite build && npx cap sync"
   },
   "dependencies": {
     "@capacitor/android": "^8.1.0",
+    "@capacitor/app": "^8.1.0",
     "@capacitor/cli": "^8.1.0",
     "@capacitor/core": "^8.1.0",
     "@capacitor/ios": "^8.1.0",
     "@capacitor/status-bar": "^8.0.0",
     "@capgo/capacitor-navigation-bar": "^8.0.19",
+    "@capgo/inappbrowser": "^8.6.3",
     "@lit-labs/router": "^0.1.4",
     "@vaadin/router": "^2.0.1",
     "axios": "^1.13.5",

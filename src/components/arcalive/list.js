@@ -3,7 +3,7 @@ import { fetchHtml } from '/src/cf-bypass.js';
 import storage from '/src/storage.js';
 
 /**
- * <dc-list> — DC Inside 글 목록 데이터 프로바이더
+ * <arcalive-list> — ArcaLive 글 목록 데이터 프로바이더
  *
  * 역할: 데이터 fetch + 누적 버퍼 관리 + localStorage 연동
  * 뷰 렌더링: <list-view> 위임
@@ -15,11 +15,11 @@ import storage from '/src/storage.js';
  *
  * 저장 데이터: { buffer, nextApiPage, hasMore, offset }
  */
-export class DcList extends LitElement {
+export class ArcaliveList extends LitElement {
   static properties = {
-    boardId:     { type: String },
+    channelId:   { type: String },
     articles:    { type: Array },   // _buffer를 그대로 참조 (반응형 prop)
-    galleryName: { type: String },
+    channelName: { type: String },
     loading:     { type: Boolean },
     error:       { type: String },
     hasMore:     { type: Boolean },
@@ -29,9 +29,9 @@ export class DcList extends LitElement {
 
   constructor() {
     super();
-    this.boardId = '';
+    this.channelId = '';
     this.articles = [];
-    this.galleryName = '';
+    this.channelName = '';
     this.loading = true;
     this.error = null;
     this.hasMore = false;
@@ -43,24 +43,24 @@ export class DcList extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    if (this.boardId) this._initBoard();
+    if (this.channelId) this._initBoard();
   }
 
   willUpdate(changed) {
-    if (changed.has('boardId') && this.boardId) {
+    if (changed.has('channelId') && this.channelId) {
       this.articles = [];
       this.loading = true;
       this.error = null;
-      this.galleryName = '';
+      this.channelName = '';
       this.hasMore = false;
       this._initBoard();
     }
   }
 
   _initBoard() {
-    // 같은 boardId로 중복 호출 방지
-    if (this._initKey === this.boardId) return;
-    this._initKey = this.boardId;
+    // 같은 channelId로 중복 호출 방지
+    if (this._initKey === this.channelId) return;
+    this._initKey = this.channelId;
 
     this._buffer = [];
     this._nextApiPage = 1;
@@ -68,7 +68,7 @@ export class DcList extends LitElement {
 
     try {
       const books = JSON.parse(storage.ArticleReaderRecentBooks || '[]');
-      const saved = books.find(b => b.isListItem && b.boardId === this.boardId);
+      const saved = books.find(b => b.isListItem && b.channelId === this.channelId);
       if (saved?.offset) {
         this._initialOffset = saved.offset;
       }
@@ -86,40 +86,33 @@ export class DcList extends LitElement {
     this.requestUpdate();
     try {
       while (true) {
-        const baseUrl = `https://gall.dcinside.com/mgallery/board/lists/?id=${this.boardId}&page=${this._nextApiPage}`;
+        const baseUrl = `https://arca.live/b/${this.channelId}?p=${this._nextApiPage}`;
         const htmlText = await fetchHtml(baseUrl);
         const parser = new DOMParser();
         const data = parser.parseFromString(htmlText, 'text/html');
 
-        if (data.querySelector('.delet') ||
-            data.head.innerHTML.includes('해당 갤러리는 존재하지 않습니다')) {
-          throw new Error('GALLERY_NOT_FOUND');
-        }
-        
-        this.galleryName =
-          data.querySelector('.page_head > * > * > *')?.firstChild?.textContent?.trim() ||
-          this.boardId;
+        this.channelName =
+          data.querySelector('.head > .title')?.textContent?.trim() ||
+          this.channelId;
 
         const items = [];
-        const rows = data.querySelectorAll('.gall_list tbody tr.ub-content');
+        const rows = data.querySelectorAll('.article-list > .list-table a.vrow.column');
         for (const row of rows) {
-          if (row.classList.contains('notice_cont')) continue;
-          if (!row.classList.contains('us-post')) continue;
-          if (row.querySelector('.icon_notice')) continue;
-          const no =
-            row.getAttribute('data-no') ||
-            row.querySelector('td.gall_num')?.textContent?.trim();
-          if (!no) continue;
+          if (row.classList.contains('notice')) continue;
+          const badge = row.querySelector('.badge.badge-success')?.textContent?.trim() || '';
           const titleEl =
-            row.querySelector('td.gall_tit a.ub-word') ||
-            row.querySelector('td.gall_tit > a:not(.reply_num)');
+            row.querySelector('.title') ||
+            row.querySelector('.vcol.col-title');
           if (!titleEl) continue;
-          const title = titleEl.textContent.trim();
+          const title = titleEl.childNodes[0]?.textContent?.trim() || titleEl.textContent.trim();
           const author =
-            row.querySelector('.nickname')?.getAttribute('title') ||
-            row.querySelector('.nickname')?.textContent?.trim() ||
-            row.querySelector('.wr_name')?.textContent?.trim() || '';
-          items.push({ no, title, author });
+            row.querySelector('.user-info > span:nth-child(1)')?.textContent?.trim() ||
+            row.querySelector('.user-info')?.textContent?.trim() || '';
+          const href = row.getAttribute('href') || '';
+          const match = href.match(/\/b\/[^/]+\/(\d+)/);
+          const no = match ? match[1] : '';
+          if (!no) continue;
+          items.push({ no, title, author, badge });
         }
 
         this.hasMore = items.length >= 20;
@@ -132,7 +125,7 @@ export class DcList extends LitElement {
           break;
         }
       }
-      
+
       this.loading = false;
       this._saveToRecent(this._initialOffset);
       this.requestUpdate();
@@ -148,18 +141,17 @@ export class DcList extends LitElement {
   _saveToRecent(offset) {
     try {
       let books = JSON.parse(storage.ArticleReaderRecentBooks || '[]');
-      books = books.filter(b => !(b.isListItem && b.boardId === this.boardId));
+      books = books.filter(b => !(b.isListItem && b.channelId === this.channelId));
       
-      // buffer에서 offset 위치의 아이템의 no(글번호)나 제목을 저장하거나,
-      // 단순히 offset 자체를 저장하여 복구 시 해당 위치까지 fetch 하도록 설계
+      // buffer에서 offset 위치의 아이템 정보를 기반으로 정확한 위치를 복구하도록 설계
       books.unshift({
-        type: 'dcinside',
-        boardId: this.boardId,
+        type: 'arcalive',
+        channelId: this.channelId,
         articleNo: '',
-        title: this.galleryName,
+        title: this.channelName,
         isListItem: true,
-        source: '/dc/list',
-        offset, // 정확한 아이템 시작 위치
+        source: '/arcalive/list',
+        offset, // 정확한 아이템 시작 인덱스
       });
       storage.ArticleReaderRecentBooks = JSON.stringify(books);
     } catch (e) {}
@@ -178,12 +170,12 @@ export class DcList extends LitElement {
     return html`
       <list-view
         .articles=${this.articles}
-        .boardTitle=${this.galleryName}
+        .boardTitle=${this.channelName}
         .hasMore=${this.hasMore}
         .loading=${this.loading}
         .error=${this.error}
         .initialOffset=${this._initialOffset}
-        .articleBasePath=${`/dc/article?boardId=${encodeURIComponent(this.boardId)}`}
+        .articleBasePath=${`/arcalive/article?channelId=${encodeURIComponent(this.channelId)}`}
         @load-more=${() => this._fetchNextPage()}
         @offset-changed=${(e) => this._onOffsetChanged(e)}
         @navigate-article=${(e) => this._navigate(e.detail.url)}
@@ -192,4 +184,4 @@ export class DcList extends LitElement {
   }
 }
 
-customElements.define('dc-list', DcList);
+customElements.define('arcalive-list', ArcaliveList);

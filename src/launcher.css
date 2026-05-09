@@ -1,6 +1,16 @@
 
 @import "//cdn.jsdelivr.net/npm/font-kopubworld@1.0";
 
+:root {
+  --app-bg: white;
+  --app-color: black;
+}
+
+.black {
+  --app-bg: black;
+  --app-color: white;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -20,26 +30,28 @@ body {
   font-size: 14px;
   color: black;
   background-color: #fff;
-  margin-bottom: 3lh;
+  height: 100dvh;
+  overflow: hidden;
 }
 
 .white,
 .white input,
 .white select,
-.white button {
+.white button,
+.white #navbar {
   background-color: white;
 }
 
 .black,
 .black input,
 .black select,
-.black button {
+.black button,
+.black #navbar {
   background-color: black;
 }
 
 .black,
 .black #navbar button,
-.black .floatingButton,
 .black input,
 .black select,
 .black button,
@@ -49,7 +61,6 @@ body {
 
 .white,
 .white #navbar button,
-.white .floatingButton,
 .white input,
 .white select,
 .white button,
@@ -57,28 +68,26 @@ body {
   color: black;
 }
 
-#navbar {
-  font-family: Arial, sans-serif;
-  font-size: 12px;
-  position: fixed;
-  bottom: 8.5lh;
-  right: 1lh;
-  color: transparent;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: .5lh;
-  transition: all 0.3s ease-in-out;
-  z-index: 10;
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(1lh);
+a:link {
+  font-weight: bold;
 }
 
-#navbar.show {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
+a:visited {
+  font-weight: normal;
+}
+
+#navbar {
+  font-family: Arial, sans-serif;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  line-height: normal;
+  height: 4lh;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
 }
 
 .material-symbols-rounded {
@@ -86,29 +95,14 @@ body {
   vertical-align: middle;
 }
 
-#navbar button,
-.floatingButton {
+#navbar button {
+  border: 0;
+  background: transparent;
   font-size: 12px;
   cursor: pointer;
-  width: 3lh;
-  height: 3lh;
-  background: rgba(255, 255, 255, 0.15) !important;
-  border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5.1px);
-  -webkit-backdrop-filter: blur(5.1px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
   z-index: 10;
-}
-
-.black #navbar button,
-.black .floatingButton {
-  background: rgba(0, 0, 0, 0.15) !important;
-}
-.floatingButton {
-  position: fixed;
-  bottom: 5lh;
-  right: 1lh;
+  width: 100%;
+  height: 100%;
 }
 
 
@@ -125,7 +119,7 @@ body {
 
 .book-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1em;
   width: 100%;
   height: 100%;
@@ -211,11 +205,11 @@ body {
 }
 
 .bookmarked {
-  color: #fc0;
+  color: inherit;
 }
 
 .delete-btn {
-  color: red;
+  color: inherit;
 }
 
 .meta {
@@ -223,12 +217,12 @@ body {
   box-sizing: border-box;
   text-align: center;
   overflow: hidden;
-  height: 2em;
+  height: 2lh;
+  font-size: .5lh;
 }
 
 .title {
   display: block;
-  font-size: .7em;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -237,11 +231,9 @@ body {
 
 .author {
   display: block;
-  font-size: .7em;
   white-space: nowrap;
   text-overflow: ellipsis;
-  overflow: hidden;
-  color: gray;
+  color: inherit;
 }
 
 .banner-controls {
@@ -257,7 +249,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: gray;
+  color: inherit;
   background: transparent;
   border: none;
   padding: 0;
@@ -276,6 +268,9 @@ body {
   user-select: none;
   line-height: 1;
 }
+.banner-controls>.banner-btn:disabled {
+  opacity: 0;
+}
 
 .goto-section {
   display: flex;
@@ -283,7 +278,7 @@ body {
   gap: .5lh;
   width: 100%;
   margin-top: 1lh;
-  margin-bottom: 6lh;
+  margin-bottom: 1lh;
 }
 
 .goto-section input,
@@ -333,4 +328,328 @@ body {
 .black .submit-btn {
   background-color: white;
   color: black;
+}
+
+/* ── List toolbar ───────────────────────────── */
+.list-toolbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1em;
+  padding: .5lh 3em;
+}
+
+.toolbar-btn {
+  display: flex;
+  align-items: center;
+  gap: .2em;
+  padding: .3lh;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  outline: 1px inset currentColor;
+  outline-offset: -1  px;
+  border-radius: .4lh;
+  color: inherit;
+}
+
+.toolbar-btn:disabled {
+  cursor: default;
+}
+
+.toolbar-btn .material-icons {
+  font-size: 1.2lh;
+}
+
+.toolbar-label {
+  font-size: .85em;
+}
+
+.delete-selected-btn {
+  color: inherit;
+}
+
+/* ── Card select overlay ────────────────────── */
+.book-card.selected .cover {
+  outline: 2px solid currentColor;
+}
+
+.select-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.08);
+  z-index: 10;
+}
+
+.black .select-overlay {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.select-check {
+  font-size: 2lh !important;
+  color: inherit;
+  text-shadow: none;
+}
+
+/* ── Site badge ─────────────────────────────── */
+.site-badge {
+  display: inline-block;
+  font-size: .65em;
+  font-weight: bold;
+  padding: 1px 4px;
+  border-radius: 3px;
+  margin-right: .15em;
+  vertical-align: middle;
+  line-height: 1.4;
+  outline: 1px inset currentColor;
+  outline-offset: -1  px;
+  background: transparent;
+  height: 100%;
+}
+
+.site-dcinside,
+.site-arcalive {
+  font-weight: bold;
+}
+
+/* ── List item card ─────────────────────────── */
+.list-cover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.list-cover-icon {
+  font-size: 2.5em;
+  pointer-events: none;
+}
+
+/* ══════════════════════════════════════════════
+   list-view 컴포넌트 (태그명 스코핑)
+   ══════════════════════════════════════════════ */
+
+list-view {
+  display: block;
+  height: 100dvh;
+  font-family: 'KoPubWorld Dotum', sans-serif;
+  font-size: 14px;
+  background-color: var(--app-bg, white);
+  color: var(--app-color, black);
+}
+
+list-view * {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+list-view .list-page {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+list-view .list-header {
+  padding: .3lh 1lh;
+  border-bottom: 2px solid currentColor;
+  flex-shrink: 0;
+}
+
+list-view .board-title {
+  font-size: 1.1lh;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+list-view .articles {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+list-view .article-item {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 1lh;
+  border-bottom: 1px solid currentColor;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+list-view .article-item.visited {
+  font-weight: lighter;
+  text-decoration: none;
+}
+
+list-view .article-title {
+  font-size: .7lh;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+list-view .article-meta {
+  display: flex;
+  gap: .3em;
+  font-size: .5lh;
+  margin-top: 0;
+}
+
+list-view .badge {
+  outline: 1px solid currentColor;
+  outline-offset: -2px;
+  padding: 0 .3lh;
+  flex-shrink: 0;
+}
+
+list-view .pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: .5lh 1lh 3lh;
+  border-top: 1px solid currentColor;
+  line-height: normal;
+  flex-shrink: 0;
+}
+
+list-view .page-btn {
+  background: transparent;
+  border: 1px solid currentColor;
+  padding: 0;
+  cursor: pointer;
+  font-size: .7lh;
+  border-radius: .3lh;
+  color: inherit;
+}
+
+list-view .page-btn:disabled {
+  color: transparent;
+  cursor: default;
+}
+
+list-view .page-info {
+  font-size: .85lh;
+}
+
+list-view .status {
+  padding: 3lh 2lh;
+  text-align: center;
+  font-size: 1.2lh;
+}
+
+/* ══════════════════════════════════════════════
+   article-view 컴포넌트 (태그명 스코핑)
+   ══════════════════════════════════════════════ */
+
+article-view {
+  --font-batang: 'KoPubWorld Batang', serif;
+  --font-dotum: 'KoPubWorld Dotum', sans-serif;
+  display: block;
+  height: 100dvh;
+  font-family: var(--font-batang);
+  overflow: hidden;
+  background-color: var(--app-bg, white);
+  color: var(--app-color, black);
+}
+
+article-view * {
+  touch-action: none;
+  box-sizing: border-box;
+}
+
+article-view main {
+  position: relative;
+  padding: 2lh;
+  height: 100%;
+  overflow: hidden;
+  padding-bottom: 5lh
+}
+
+article-view .content {
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  max-height: calc(var(--vh, 1vh) * 100 - 5lh);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+article-view .content::-webkit-scrollbar {
+  display: none;
+}
+
+article-view img {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 20px 0;
+}
+
+article-view a {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  color: inherit;
+}
+
+article-view .image-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+article-view .image-container > img {
+  width: 100%;
+  height: auto;
+  margin: 0;
+}
+
+article-view a:link {
+  font-family: var(--font-dotum);
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+article-view a.visited {
+  font-weight: normal;
+  text-decoration: none;
+}
+
+article-view #page-indicator {
+  position: absolute;
+  bottom: 4lh;
+  left: 50%;
+  transform: translateX(-50%)translateY(-50%);
+  font-size: .5lh;
+  font-family: var(--font-dotum);
+  opacity: 0;
+  transition: none;
+}
+
+article-view #page-indicator.show {
+  opacity: 1;
+}
+
+article-view .error {
+  padding: 2lh;
+  text-align: center;
+  font-size: 1.5lh;
+}
+
+article-view p {
+  margin: 0;
 }

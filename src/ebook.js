@@ -1,4 +1,5 @@
 // ebook.js
+import storage from '/src/storage.js';
 export function initializeLineHeight(container, component) {
   const updateLineHeight = () => {
     const lineHeight = window.innerHeight / 30;
@@ -9,7 +10,7 @@ export function initializeLineHeight(container, component) {
   return updateLineHeight;
 }
 
-export function initializeImages(contentElement, shadowRoot) {
+export function initializeImages(contentElement, container) {
   const styles = window.getComputedStyle(contentElement);
   const lineHeight = parseFloat(styles.lineHeight);
 
@@ -32,7 +33,7 @@ export function initializeImages(contentElement, shadowRoot) {
     }
   };
 
-  shadowRoot.querySelectorAll(".image-container").forEach(element => {
+  container.querySelectorAll(".image-container").forEach(element => {
     const img = element.querySelector("img");
     if (img.complete) {
       imageInitialize(element);
@@ -70,7 +71,7 @@ export function setupPagination(component, contentElement, indicatorElement) {
       const storageKey = 'ArticleReaderBookPageRestore';
       let restoreData = [];
       try {
-        restoreData = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        restoreData = JSON.parse(storage.getItem(storageKey) || '[]');
       } catch (e) {
         restoreData = [];
       }
@@ -84,7 +85,7 @@ export function setupPagination(component, contentElement, indicatorElement) {
 
       restoreData = restoreData.filter(item => !(item.boardId === entry.boardId && item.articleNo === entry.articleNo));
       restoreData.unshift(entry);
-      localStorage.setItem(storageKey, JSON.stringify(restoreData.slice(0, 100)));
+      storage.setItem(storageKey, JSON.stringify(restoreData.slice(0, 100)));
     }
 
     showIndicator(`${currentPage + 1} / ${totalPages}`);
@@ -93,35 +94,73 @@ export function setupPagination(component, contentElement, indicatorElement) {
   const handleResize = () => goToPage(currentPage);
   window.addEventListener("resize", handleResize);
 
-  const handleClick = (e) => {
-    // Shadow DOM 내부의 클릭 타겟 확인
-    const path = e.composedPath();
-    const isInteractive = path.some(el => 
-      el.tagName === 'A' || el.tagName === 'BUTTON' || (el.id === 'navbar')
-    );
-    
-    if (isInteractive) return;
+  let holdInterval = null;
+  let holdTimeout = null;
+  let isHolding = false;
 
-    if (e.clientX > window.innerWidth / 2) {
-      goToPage(currentPage + 1);
-    } else {
-      goToPage(currentPage - 1);
-    }
+  const stopHold = () => {
+    clearTimeout(holdTimeout);
+    clearInterval(holdInterval);
+    holdTimeout = null;
+    holdInterval = null;
+    isHolding = false;
   };
 
-  component.addEventListener('click', handleClick);
+  const handlePointerDown = (e) => {
+    const path = e.composedPath();
+    const isInteractive = path.some(el =>
+      el.tagName === 'A' || el.tagName === 'BUTTON' || (el.id === 'navbar')
+    );
+    if (isInteractive) return;
+
+    const direction = e.clientX > window.innerWidth / 2 ? 1 : -1;
+
+    holdTimeout = setTimeout(() => {
+      isHolding = true;
+      holdInterval = setInterval(() => {
+        goToPage(currentPage + direction);
+      }, 300);
+    }, 200);
+  };
+
+  const handlePointerUp = (e) => {
+    if (!isHolding) {
+      // 짧은 탭 → 단순 클릭 처리
+      const path = e.composedPath();
+      const isInteractive = path.some(el =>
+        el.tagName === 'A' || el.tagName === 'BUTTON' || (el.id === 'navbar')
+      );
+      if (!isInteractive) {
+        if (e.clientX > window.innerWidth / 2) {
+          goToPage(currentPage + 1);
+        } else {
+          goToPage(currentPage - 1);
+        }
+      }
+    }
+    stopHold();
+  };
+
+  component.addEventListener('pointerdown', handlePointerDown);
+  component.addEventListener('pointerup', handlePointerUp);
+  component.addEventListener('pointercancel', stopHold);
+  component.addEventListener('pointerleave', stopHold);
 
   return { 
     goToPage, 
     cleanup: () => {
+      stopHold();
       window.removeEventListener("resize", handleResize);
-      component.removeEventListener('click', handleClick);
+      component.removeEventListener('pointerdown', handlePointerDown);
+      component.removeEventListener('pointerup', handlePointerUp);
+      component.removeEventListener('pointercancel', stopHold);
+      component.removeEventListener('pointerleave', stopHold);
     }
   };
 }
 
 export function Loaded(component) {
-  const root = component.shadowRoot;
+  const root = component;
   const content = root.querySelector('.content');
   const indicator = root.querySelector('#page-indicator');
 
@@ -131,7 +170,7 @@ export function Loaded(component) {
   initializeLineHeight(content, component);
   
   // 2. 이미지 정렬 (이미지 로딩 완료 후 높이 계산)
-  initializeImages(content, root);
+  initializeImages(content, component);
 
   // 3. 페이지네이션 설정
   const pagination = setupPagination(component, content, indicator);
@@ -139,7 +178,7 @@ export function Loaded(component) {
   // 4. 저장된 페이지 복구
   const storageKey = 'ArticleReaderBookPageRestore';
   try {
-    const restoreData = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    const restoreData = JSON.parse(storage.getItem(storageKey) || '[]');
     const entry = restoreData.find(item => 
       item.boardId === component.boardId && 
       item.articleNo === component.articleNo

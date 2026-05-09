@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit';
+import storage from '/src/storage.js';
 
 export class NavBar extends LitElement {
   static properties = {
@@ -7,24 +8,22 @@ export class NavBar extends LitElement {
 
   constructor() {
     super();
-    this.navbarOpen = false;
   }
 
   connectedCallback() {
     super.connectedCallback();
     this.setTheme();
-    window.addEventListener('touchstart', this.handleGlobalTouch.bind(this), { passive: true });
   }
 
   setTheme() {
     document.body.className = '';
-    document.body.classList.add(window.localStorage.getItem('theme') || 'white');
+    document.body.classList.add(storage.getItem('theme') || 'white');
   }
 
   handleSetting() {
-    const currentTheme = window.localStorage.getItem('theme');
+    const currentTheme = storage.getItem('theme');
     const newTheme = currentTheme === 'white' ? 'black' : 'white';
-    window.localStorage.setItem('theme', newTheme);
+    storage.setItem('theme', newTheme);
     this.setTheme();
   }
 
@@ -47,26 +46,16 @@ export class NavBar extends LitElement {
     window.location.reload();
   }
 
-  handleToggleNavbar() {
-    this.navbarOpen = !this.navbarOpen;
-    document.body.classList[this.navbarOpen ? 'add' : 'remove']('no-scroll');
-    this.requestUpdate();
-  }
-
-  handleGlobalTouch(e) {
-    const isNavbarClick = e.composedPath().some(el => el.id === 'navbar' || el.id === 'toggleButton');
-    if (this.navbarOpen && !isNavbarClick) {
-      this.handleToggleNavbar();
-    }
-  }
-
   createRenderRoot() {
     return this;
   }
   
   render() {
     return html`
-      <div id="navbar" class="${this.navbarOpen ? 'show' : ''}">
+      <div id="navbar">
+        <button id="refresh" @click=${() => this.handleRefresh()}>
+          <span class="material-symbols-rounded">refresh</span>
+        </button>
         <button id="go-root" @click=${() => this.handleGoRoot()}>
           <span class="material-symbols-rounded">home</span>
         </button>
@@ -79,14 +68,7 @@ export class NavBar extends LitElement {
         <button id="setting" @click=${() => this.handleSetting()}>
           <span class="material-symbols-rounded">format_paint</span>
         </button>
-        <button id="refresh" @click=${() => this.handleRefresh()}>
-          <span class="material-symbols-rounded">refresh</span>
-        </button>
-      </div>
-      <button id="toggleButton" class="floatingButton" @click=${() => this.handleToggleNavbar()}>
-        <span class="material-symbols-rounded">${this.navbarOpen ? 'arrow_drop_down' : 'more_horiz'}</span>
-      </button>
-    `;
+      </div>`;
   }
 }
 customElements.define('nav-bar', NavBar);
