@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     
     # 커밋 메시지가 'Test' 또는 'Release'로 시작할 때만 작업 실행
-    if: startsWith(github.event.head_commit.message, 'Test') || startsWith(github.event.head_commit.message, 'Release')
+    if: startsWith(github.event.head_commit.message, 'Build') || startsWith(github.event.head_commit.message, 'Release')
 
     steps:
       - name: Checkout source
