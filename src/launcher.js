@@ -163,7 +163,21 @@ export class Launcher extends LitElement {
 
     // 즐겨찾기 -> 일반 책 순서로 병합 (일반 책은 원래 순서 유지)
     this.books = [...bookmarked, ...normal];
+    this.currentPage = Math.max(
+      0,
+      Math.min(this.currentPage, this.getLastPageIndex(this.books))
+    );
     this.requestUpdate();
+  }
+
+  getLastPageIndex(books = this.books) {
+    return Math.max(0, Math.ceil(books.length / this.pageSize) - 1);
+  }
+
+  normalizeCurrentPage() {
+    const lastPage = this.getLastPageIndex();
+    this.currentPage = Math.max(0, Math.min(this.currentPage, lastPage));
+    return this.currentPage;
   }
 
   handleStorageChange(ev) {
@@ -203,15 +217,17 @@ export class Launcher extends LitElement {
   }
 
   handlePrevPage() {
-    if (this.currentPage > 0) {
-      this.currentPage--;
+    const currentPage = this.normalizeCurrentPage();
+    if (currentPage > 0) {
+      this.currentPage = currentPage - 1;
       this.requestUpdate();
     }
   }
 
   handleNextPage() {
-    if ((this.currentPage + 1) * this.pageSize < this.books.length) {
-      this.currentPage++;
+    const currentPage = this.normalizeCurrentPage();
+    if (currentPage < this.getLastPageIndex()) {
+      this.currentPage = currentPage + 1;
       this.requestUpdate();
     }
   }
@@ -256,10 +272,11 @@ export class Launcher extends LitElement {
   }
 
   render() {
-    const start = this.currentPage * this.pageSize;
+    const currentPage = this.normalizeCurrentPage();
+    const start = currentPage * this.pageSize;
     const displayBooks = this.books.slice(start, start + this.pageSize);
-    const prevDisabled = this.currentPage === 0;
-    const nextDisabled = (this.currentPage + 1) * this.pageSize >= this.books.length;
+    const prevDisabled = currentPage === 0;
+    const nextDisabled = currentPage >= this.getLastPageIndex();
 
     const SITE_LABELS = { dcinside: 'DC', arcalive: 'Arc' };
 
@@ -417,7 +434,7 @@ export class Launcher extends LitElement {
   </div>
   <div class="list-frame" id="listFrame">
     <div class="book-grid" id="bookGrid" role="list">
-      ${[...Array(this.pageSize)].map((_, i) => renderCard(displayBooks[i], i))}
+      ${displayBooks.map((item, i) => renderCard(item, i))}
     </div>
 
     <div class="banner-controls">
