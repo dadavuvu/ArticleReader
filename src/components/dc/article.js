@@ -61,6 +61,10 @@ export class DcArticle extends LitElement {
     let responseHTML = '';
     try {
       responseHTML = await fetchHtml(baseUrl);
+      const redirectUrl = this.getDcRedirectUrl(responseHTML);
+      if (redirectUrl) {
+        responseHTML = await fetchHtml(redirectUrl);
+      }
       const parser = new DOMParser();
       const data = parser.parseFromString(responseHTML, 'text/html');
 
@@ -100,6 +104,13 @@ export class DcArticle extends LitElement {
       this.loading = false;
       this.requestUpdate();
     }
+  }
+
+  getDcRedirectUrl(responseHTML) {
+    const match = responseHTML.match(
+      /location\.replace\(\s*["'](https:\/\/gall\.dcinside\.com\/board\/view[^"']*)["']\s*\)/i
+    );
+    return match ? match[1] : '';
   }
 
   _saveToRecent() {
