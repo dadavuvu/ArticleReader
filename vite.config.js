@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+import { ARTICLE_READER_USER_AGENT } from './src/cf-bypass.js';
 
 puppeteer.use(StealthPlugin());
 
@@ -28,9 +29,7 @@ function proxyPlugin() {
         try {
           const b = await getBrowser();
           page = await b.newPage();
-          await page.setUserAgent(
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-          );
+          await page.setUserAgent(ARTICLE_READER_USER_AGENT);
           const response = await page.goto(targetUrl, { waitUntil: 'networkidle2', timeout: 30000 });
           
           // CloudFlare Challenge 대기
