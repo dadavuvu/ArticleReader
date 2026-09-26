@@ -72,7 +72,7 @@ export class DcArticle extends LitElement {
       if (data.head.innerHTML.indexOf('alert("해당 갤러리는 존재하지 않습니다.");') !== -1)
         throw new Error('UNKNOWN_ARTICLE');
 
-      const content = data.querySelector('.write_div');
+      const content = data.querySelector('.writing_view_box');
       if (!content) throw new Error('CONTENT_NOT_FOUND');
 
       this._title =
@@ -91,6 +91,7 @@ export class DcArticle extends LitElement {
       this.processLinks(content);
       this.normalizeFontSizes(content);
 
+      content.querySelectorAll('.write_div').forEach(el => el.style.width = '100%');
       this.contentHTML = content.innerHTML;
       document.title = this._title;
       this.loading = false;
@@ -174,7 +175,10 @@ export class DcArticle extends LitElement {
   processLinks(content) {
     const visitedLinks = this.getVisitedLinks();
     for (const element of content.querySelectorAll('a')) {
-      if (element.href.indexOf('gall.dcinside.com/mgallery/board/view') !== -1) {
+      if (
+        element.href.indexOf('gall.dcinside.com/mgallery/board/view') !== -1 || 
+        element.href.indexOf('gall.dcinside.com/board/view') !== -1
+      ) {
         element.setAttribute('target', '');
         const params = new URL(element.href).searchParams;
         const newUrl = `/dc?boardId=${params.get('id')}&articleNo=${params.get('no')}`;
