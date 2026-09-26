@@ -16,6 +16,8 @@ export class DcArticle extends LitElement {
     loading:     { type: Boolean },
     error:       { type: String },
     contentHTML: { type: String },
+    errorHTML:   { type: String },
+    errorURL:    { type: String },
   };
 
   createRenderRoot() { return this; }
@@ -27,6 +29,8 @@ export class DcArticle extends LitElement {
     this.loading = true;
     this.error = null;
     this.contentHTML = '';
+    this.errorHTML = '';
+    this.errorURL = '';
     this._title = '';
     this._author = '';
     this._thumbnail = '';
@@ -50,12 +54,15 @@ export class DcArticle extends LitElement {
     this.loading = true;
     this.error = null;
     this.contentHTML = '';
+    this.errorHTML = '';
+    this.errorURL = '';
     this.requestUpdate();
+    const baseUrl = `https://gall.dcinside.com/mgallery/board/view/?id=${this.boardId}&no=${this.articleNo}`;
+    let responseHTML = '';
     try {
-      const baseUrl = `https://gall.dcinside.com/mgallery/board/view/?id=${this.boardId}&no=${this.articleNo}`;
-      const htmlText = await fetchHtml(baseUrl);
+      responseHTML = await fetchHtml(baseUrl);
       const parser = new DOMParser();
-      const data = parser.parseFromString(htmlText, 'text/html');
+      const data = parser.parseFromString(responseHTML, 'text/html');
 
       if (data.querySelector('.delet')) throw new Error('UNKNOWN_GALLERY');
       if (data.head.innerHTML.indexOf('alert("해당 갤러리는 존재하지 않습니다.");') !== -1)
@@ -86,6 +93,10 @@ export class DcArticle extends LitElement {
       this.requestUpdate();
     } catch (error) {
       this.error = error.message;
+      if (error.message === 'CONTENT_NOT_FOUND') {
+        this.errorHTML = responseHTML;
+        this.errorURL = baseUrl;
+      }
       this.loading = false;
       this.requestUpdate();
     }
@@ -187,6 +198,8 @@ export class DcArticle extends LitElement {
         .contentHTML=${this.contentHTML}
         .loading=${this.loading}
         .error=${this.error}
+        .errorHTML=${this.errorHTML}
+        .errorURL=${this.errorURL}
         .boardId=${this.boardId}
         .articleNo=${this.articleNo}
       ></article-view>

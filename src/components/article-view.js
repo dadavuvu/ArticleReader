@@ -23,6 +23,8 @@ export class ArticleView extends LitElement {
     contentHTML: { type: String },
     loading:     { type: Boolean },
     error:       { type: String },
+    errorHTML:   { type: String },
+    errorURL:    { type: String },
     boardId:     { type: String },
     articleNo:   { type: String },
   };
@@ -34,6 +36,8 @@ export class ArticleView extends LitElement {
     this.contentHTML = '';
     this.loading = false;
     this.error = null;
+    this.errorHTML = '';
+    this.errorURL = '';
     this.boardId = '';
     this.articleNo = '';
     this._ebookController = null;
@@ -96,7 +100,23 @@ export class ArticleView extends LitElement {
       return html`<main></main>`;
     }
     if (this.error) {
-      return html`<main><div class="error">Error: ${this.error}</div></main>`;
+      return html`
+        <main>
+          <div class="error">
+            <div>Error: ${this.error}</div>
+            ${this.error === 'CONTENT_NOT_FOUND' ? html`
+              <details class="error-details" open>
+                <summary>상세 오류 로그</summary>
+                <div class="error-log">
+                  <div>요청 URL: ${this.errorURL}</div>
+                  <div>응답 HTML 길이: ${this.errorHTML.length}자</div>
+                  <pre>${this.errorHTML}</pre>
+                </div>
+              </details>
+            ` : ''}
+          </div>
+        </main>
+      `;
     }
     return html`
       <main @click=${this._handleContentClick}>

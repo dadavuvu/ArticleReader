@@ -5,5 +5,6 @@ export async function fetchHtml(targetUrl) {
   const response = await CapacitorHttp.get({
     url: `${!isNative ? '/proxy/' : ''}${targetUrl}`
   });
+  console.log(`fetchHtml: ${targetUrl} => ${response.status}`);
   return typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
 }

@@ -42,6 +42,7 @@ function proxyPlugin() {
           ];
           for (const selector of cloudflareChecks) {
             if (await page.$(selector)) {
+              console.log(`CloudFlare challenge detected for ${targetUrl}, waiting...`);
               await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 30000 }).catch(() => {});
               break;
             }
