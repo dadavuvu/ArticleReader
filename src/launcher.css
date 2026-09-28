@@ -362,6 +362,19 @@ a:visited {
   font-size: 1.2lh;
 }
 
+.import-text-btn {
+  position: relative;
+}
+
+.import-text-btn input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
 .toolbar-label {
   font-size: .85em;
 }
@@ -590,6 +603,14 @@ article-view .content {
 
 article-view .content::-webkit-scrollbar {
   display: none;
+}
+
+article-view .text-content {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: inherit;
+  text-align: left;
 }
 
 article-view img {

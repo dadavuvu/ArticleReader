@@ -118,6 +118,7 @@ export class Launcher extends LitElement {
   }
 
   getBookmarkKey(item) {
+    if (item.type === 'text') return `text_${item.textId}`;
     if (item.isListItem) return `${item.boardId || item.channelId}_list`;
     return `${item.boardId || item.channelId}_${item.articleNo}`;
   }
@@ -139,6 +140,11 @@ export class Launcher extends LitElement {
     const key = this.getBookmarkKey(item);
     if (this.bookmarks.has(key)) {
       this.bookmarks.delete(key);
+      if (item.type === 'text') {
+        this.saveBookmarks();
+        this.deleteCard(item);
+        return;
+      }
     } else {
       this.bookmarks.add(key);
     }
@@ -198,6 +204,10 @@ export class Launcher extends LitElement {
 
   handleCardClick(item) {
     if (!item) return;
+    if (item.type === 'text') {
+      this.navigate(`${item.source}?textId=${encodeURIComponent(item.textId)}`);
+      return;
+    }
     if (item.isListItem) {
       const paramKey = item.channelId ? 'channelId' : 'boardId';
       const paramVal = item.channelId || item.boardId;
@@ -267,6 +277,34 @@ export class Launcher extends LitElement {
     this.loadBooks();
   }
 
+  async importTextFile(event) {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+
+    try {
+      const buffer = await file.arrayBuffer();
+      let content = new TextDecoder('utf-8').decode(buffer);
+      if (content.includes('\ufffd')) content = new TextDecoder('euc-kr').decode(buffer);
+      const textId = `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+      const books = this.getRecentBooks();
+      books.unshift({
+        type: 'text',
+        textId,
+        title: file.name.replace(/\.txt$/i, '') || file.name,
+        author: 'TXT',
+        content,
+        source: '/text/article',
+      });
+      storage.ArticleReaderRecentBooks = JSON.stringify(books);
+      this.bookmarks.add(`text_${textId}`);
+      this.saveBookmarks();
+      this.loadBooks();
+    } catch (error) {
+      console.error('TXT 파일을 가져오지 못했습니다.', error);
+    }
+  }
+
   createRenderRoot() {
     return this;
   }
@@ -298,7 +336,7 @@ export class Launcher extends LitElement {
       const key = this.getBookmarkKey(item);
       const isBookmarked = this.bookmarks.has(key);
       const isSelected = this.selectMode && this.selectedKeys.has(key);
-      const siteLabel = SITE_LABELS[item.type] || '';
+      const siteLabel = item.type === 'text' ? 'TXT' : SITE_LABELS[item.type] || '';
 
       if (item.isListItem) {
         return html`
@@ -416,6 +454,10 @@ export class Launcher extends LitElement {
     </form>
   </div>
   <div class="list-toolbar">
+    <label class="toolbar-btn import-text-btn" title="TXT 파일 가져오기">
+      <span class="material-icons">upload_file</span>
+      <input type="file" accept=".txt,text/plain" @change=${(e) => this.importTextFile(e)}>
+    </label>
     ${!this.selectMode ? html`
       <button class="toolbar-btn" @click=${() => this.enterSelectMode()} title="선택 모드">
         <span class="material-icons">checklist</span>
@@ -544,6 +586,13 @@ export class ArticleReader extends LitElement {
           const channelId = query.get('channelId');
           const articleNo = query.get('articleNo');
           return html`<arcalive-article .channelId=${channelId} .articleNo=${articleNo}></arcalive-article>`;
+        }
+      },
+      {
+        path: '/text/article',
+        render: () => {
+          const query = new URLSearchParams(window.location.search);
+          return html`<text-article .textId=${query.get('textId')}></text-article>`;
         }
       },
       {

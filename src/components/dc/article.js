@@ -78,7 +78,7 @@ export class DcArticle extends LitElement {
       this._title =
         (data.querySelector('.title_headtext')?.textContent || '') + ' ' +
         (data.querySelector('.title_subject')?.textContent || '');
-      this._author = data.querySelector('.nickname')?.getAttribute('title') || '';
+      this._author = (data.querySelector('.page_head .fl h2 a')?.childNodes[0]?.textContent || '').trim();
 
       const firstImg = content.querySelector('img');
       this._thumbnail = firstImg ? firstImg.src : '';
@@ -90,6 +90,7 @@ export class DcArticle extends LitElement {
       this.processSeries(content);
       this.processLinks(content);
       this.normalizeFontSizes(content);
+      this.normalizeThemeColors(content);
 
       content.querySelectorAll('.write_div').forEach(el => el.style.width = '100%');
       this.contentHTML = content.innerHTML;
@@ -205,6 +206,29 @@ export class DcArticle extends LitElement {
         el.style.fontSize = Math.round(fontSize / 14) * 14 + 'px';
       }
     }
+  }
+
+  normalizeThemeColors(content) {
+    for (const el of content.querySelectorAll('[style]')) {
+      const color = el.style.color.trim().toLowerCase();
+      if (this.isThemeColor(color)) el.style.color = 'currentColor';
+    }
+  }
+
+  isThemeColor(color) {
+    if (color === 'black' || color === 'white') return true;
+
+    const hex = color.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+    if (hex) {
+      const value = hex[1].length === 3
+        ? hex[1].split('').map(digit => digit + digit).join('')
+        : hex[1];
+      return value === '000000' || value === 'ffffff';
+    }
+
+    const rgb = color.match(/^rgb\(\s*(\d+)\s*[, ]\s*(\d+)\s*[, ]\s*(\d+)\s*\)$/i);
+    return rgb && rgb.slice(1).every(value => value === '0' || value === '255') &&
+      (rgb[1] === rgb[2] && rgb[2] === rgb[3]);
   }
 
   render() {
