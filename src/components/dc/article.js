@@ -68,9 +68,9 @@ export class DcArticle extends LitElement {
       const parser = new DOMParser();
       const data = parser.parseFromString(responseHTML, 'text/html');
 
-      if (data.querySelector('.delet')) throw new Error('UNKNOWN_GALLERY');
+      if (data.querySelector('.delet')) throw new Error('UNKNOWN_ARTICLE');
       if (data.head.innerHTML.indexOf('alert("해당 갤러리는 존재하지 않습니다.");') !== -1)
-        throw new Error('UNKNOWN_ARTICLE');
+        throw new Error('UNKNOWN_GALLERY');
 
       const content = data.querySelector('.writing_view_box');
       if (!content) throw new Error('CONTENT_NOT_FOUND');
@@ -186,13 +186,22 @@ export class DcArticle extends LitElement {
         element.href = newUrl;
         if (visitedLinks.has(newUrl)) element.classList.add('visited');
       }
-      if (
+      else if (
         element.href.indexOf('m.dcinside.com/board') !== -1 ||
         element.href.indexOf('gall.dcinside.com/m') !== -1
       ) {
         element.setAttribute('target', '');
         const path = new URL(element.href).pathname.split('/');
         const newUrl = `/dc?boardId=${path[2]}&articleNo=${path[3]}`;
+        element.href = newUrl;
+        if (visitedLinks.has(newUrl)) element.classList.add('visited');
+      }
+      else if (
+        element.href.indexOf('gall.dcinside.com/') !== -1
+      ) {
+        element.setAttribute('target', '');
+        const path = new URL(element.href).pathname.split('/');
+        const newUrl = `/dc?boardId=${path[1]}&articleNo=${path[2]}`;
         element.href = newUrl;
         if (visitedLinks.has(newUrl)) element.classList.add('visited');
       }
