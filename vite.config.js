@@ -28,7 +28,7 @@ function proxyPlugin() {
         try {
           const b = await getBrowser();
           page = await b.newPage();
-          await page.setUserAgent(ARTICLE_READER_USER_AGENT);
+          await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36");
           const response = await page.goto(targetUrl, { waitUntil: 'networkidle2', timeout: 30000 });
           
           // CloudFlare Challenge 대기

@@ -55,7 +55,7 @@ jobs:
         id: parse_msg
         run: |
           SUBJECT=$(echo "${{ github.event.head_commit.message }}" | head -n 1)
-          CLEAN_TAG=$(echo "$SUBJECT" | sed -E 's/^(Test|Release)//i' | xargs)
+          CLEAN_TAG=$(echo "$SUBJECT" | sed -E 's/^(Build|Release)//i' | xargs)
           
           # 태그가 없으면 현재 시간으로 대체
           if [ -z "$CLEAN_TAG" ]; then
