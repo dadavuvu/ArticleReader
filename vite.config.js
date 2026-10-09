@@ -3,7 +3,6 @@ import express from 'express';
 import cors from 'cors';
 import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
-import { ARTICLE_READER_USER_AGENT } from './src/cf-bypass.js';
 
 puppeteer.use(StealthPlugin());
 
