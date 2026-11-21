@@ -23,7 +23,7 @@ function proxyPlugin() {
       app.use(cors());
 
       app.get('/proxy/*', async (req, res) => {
-        const targetUrl = req.url.replace('/proxy/', '');
+        const targetUrl = decodeURIComponent(req.originalUrl.replace(/^\/proxy\//, ''));
         let page = null;
         try {
           const b = await getBrowser();

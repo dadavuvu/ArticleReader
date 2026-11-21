@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { Router } from '@lit-labs/router';
 import storage from '/src/storage.js';
-import { Capacitor, CapacitorHttp } from '@capacitor/core';
+import { Capacitor } from '@capacitor/core';
 import { StatusBar } from '@capacitor/status-bar';
 import { App as CapacitorApp } from '@capacitor/app';
 import { NavigationBar } from '@capgo/capacitor-navigation-bar';

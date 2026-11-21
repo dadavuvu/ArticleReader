@@ -1,6 +1,5 @@
 ﻿import { LitElement, html } from 'lit';
-import { Capacitor } from '@capacitor/core';
-import { fetchHtml } from '/src/cf-bypass.js';
+import { fetchHtml, proxyUrl } from '/src/cf-bypass.js';
 import storage from '/src/storage.js';
 
 /**
@@ -72,7 +71,7 @@ export class ArcaliveArticle extends LitElement {
       if (firstImg) {
         let src = firstImg.getAttribute('data-src') || firstImg.getAttribute('src') || '';
         src = this._makeAbsoluteUrl(src);
-        this._thumbnail = (src && !Capacitor.isNativePlatform()) ? '/proxy/' + src : src;
+        this._thumbnail = proxyUrl(src);
       }
 
       this._saveToRecent();
@@ -122,7 +121,6 @@ export class ArcaliveArticle extends LitElement {
   }
 
   processImages(content) {
-    const isNative = Capacitor.isNativePlatform();
     for (const element of content.querySelectorAll('img')) {
       element.style.cssText = '';
       element.setAttribute('onclick', '');
@@ -130,8 +128,7 @@ export class ArcaliveArticle extends LitElement {
       element.setAttribute('alt', '');
       let src = element.getAttribute('data-src') || element.getAttribute('src') || '';
       src = this._makeAbsoluteUrl(src);
-      if (src && !isNative) src = '/proxy/' + src;
-      if (src) element.src = src;
+      if (src) element.src = proxyUrl(src);
       const div = document.createElement('div');
       div.classList.add('image-container');
       element.parentNode.insertBefore(div, element.nextSibling);

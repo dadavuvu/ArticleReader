@@ -105,6 +105,70 @@ a:visited {
   height: 100%;
 }
 
+.update-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.55);
+  color: black;
+  text-align: left;
+  user-select: text;
+}
+
+.update-dialog {
+  width: min(28em, calc(100vw - 3em));
+  padding: 1.5em;
+  border-radius: 0.8em;
+  background: white;
+  display: grid;
+  gap: 1em;
+  box-shadow: 0 0.5em 2em rgba(0, 0, 0, 0.35);
+}
+
+.black .update-dialog {
+  background: black;
+  color: white;
+  border: 1px solid #666;
+}
+
+.update-channel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5em;
+}
+
+.update-channel button,
+.update-download,
+.update-close {
+  min-height: 2.8em;
+  border: 1px solid currentColor;
+  border-radius: 0.4em;
+  background: transparent;
+}
+
+.update-channel button.active,
+.update-download {
+  background: #246bfd;
+  color: white;
+  border-color: #246bfd;
+}
+
+.restore-button {
+  min-height: 2.8em;
+  border: 1px solid currentColor;
+  border-radius: 0.4em;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  background: transparent;
+}
+
+.restore-button input {
+  display: none;
+}
+
 
 .no-scroll {
   overflow: hidden;
